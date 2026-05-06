@@ -1,0 +1,29 @@
+---
+import Menu from './Menu.astro';
+---
+
+<header class="fixed top-0 left-0 w-full z-50 bg-[#050000] border-b border-brand-red shadow-[0_4px_20px_rgba(220,38,38,0.15)] backdrop-blur-md">
+  <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+    <div class="flex justify-between items-center h-20">
+      
+      <a href="/" class="relative overflow-hidden group">
+        <span class="text-3xl font-black tracking-tighter bg-linear-to-r from-brand-red via-[#ff4d4d] to-brand-red bg-[length:200%_auto] bg-clip-text text-transparent animate-shimmer">
+          TARQUITET
+        </span>
+      </a>
+
+      <Menu />
+
+    </div>
+  </div>
+</header>
+
+<style>
+  @keyframes shimmer {
+    0% { background-position: -200% center; }
+    100% { background-position: 200% center; }
+  }
+  .animate-shimmer {
+    animation: shimmer 4s linear infinite;
+  }
+</style>

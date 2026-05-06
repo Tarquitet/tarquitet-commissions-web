@@ -1,0 +1,117 @@
+---
+import { artisticNetworks } from '../data/socials';
+import type { SocialNetwork } from '../data/socials';
+---
+
+<footer class="w-full bg-brand-black border-t border-brand-gray/50 mt-20 pt-16 pb-8 relative">
+  <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+    
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-12 text-center mb-16 items-center">
+      
+      <div class="flex flex-col md:items-start items-center gap-3">
+        <span class="text-[10px] font-bold text-brand-red uppercase tracking-[0.2em]">Correo</span>
+        <div class="flex items-center gap-2 group cursor-pointer copy-trigger" data-copy="contact@tarquitet.com">
+          <span class="text-brand-light group-hover:text-brand-red transition-colors text-lg font-medium email-text">
+            contact@tarquitet.com
+          </span>
+          <svg class="w-4 h-4 text-brand-light/30 group-hover:text-brand-red transition-colors" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z"></path></svg>
+        </div>
+      </div>
+
+      <div class="flex flex-col items-center gap-4">
+        <span class="text-[10px] font-bold text-brand-red uppercase tracking-[0.2em]">Redes Artísticas</span>
+        <div class="flex gap-6 items-center">
+          {artisticNetworks.map((network: SocialNetwork) => (
+            <a 
+              href={network.url} 
+              target="_blank" 
+              rel="noopener noreferrer" 
+              title={network.name}
+              class="w-6 h-6 bg-brand-light/60 hover:bg-brand-red transition-all duration-300"
+              style={`
+                mask-image: url(/icons/${network.icon}); 
+                mask-repeat: no-repeat; 
+                mask-position: center; 
+                mask-size: contain; 
+                -webkit-mask-image: url(/icons/${network.icon}); 
+                -webkit-mask-repeat: no-repeat; 
+                -webkit-mask-position: center; 
+                -webkit-mask-size: contain;
+              `}
+            >
+            </a>
+          ))}
+        </div>
+      </div>
+
+      <div class="flex flex-col md:items-end items-center gap-3">
+        <span class="text-[10px] font-bold text-brand-red uppercase tracking-[0.2em]">Portafolio Profesional</span>
+        <div class="flex gap-5">
+          <a href="https://tarquitet.com" target="_blank" rel="noopener noreferrer" class="text-brand-light font-bold text-sm tracking-wide hover:text-brand-red underline underline-offset-8 decoration-1 decoration-brand-gray hover:decoration-brand-red transition-all uppercase">
+            TARQUITET.COM
+          </a>
+        </div>
+      </div>
+
+    </div>
+
+    <div class="border-t border-brand-gray/30 pt-8 flex justify-center">
+      <div class="text-sm font-bold tracking-widest text-brand-light uppercase">
+        TARQUITET &copy; <span id="current-year" class="text-brand-red"></span>
+      </div>
+    </div>
+    
+  </div>
+
+  <div id="copy-toast" class="fixed bottom-8 left-1/2 -translate-x-1/2 bg-brand-red text-white px-6 py-3 rounded-full font-bold text-sm tracking-widest uppercase opacity-0 pointer-events-none transition-opacity duration-300 z-50 shadow-[0_0_20px_rgba(220,38,38,0.4)]">
+    ¡Copiado al portapapeles!
+  </div>
+</footer>
+
+<script>
+  // Año dinámico
+  const yearElement = document.getElementById('current-year');
+  if (yearElement) {
+    yearElement.textContent = new Date().getFullYear().toString();
+  }
+
+  // Lógica Copy (Vanilla JS de tu portafolio)
+  const copyTriggers = document.querySelectorAll('.copy-trigger');
+  const toast = document.getElementById('copy-toast');
+
+  copyTriggers.forEach(trigger => {
+    trigger.addEventListener('click', async () => {
+      const textToCopy = trigger.getAttribute('data-copy') || '';
+      const emailSpan = trigger.querySelector('.email-text') as HTMLElement | null;
+
+      if (!emailSpan || !textToCopy) return;
+
+      const originalText = emailSpan.innerText;
+
+      try {
+        if (navigator.clipboard) {
+          await navigator.clipboard.writeText(textToCopy);
+          
+          emailSpan.innerText = '¡COPIADO!';
+          emailSpan.style.color = '#22c55e';
+
+          if (toast) {
+            toast.classList.remove('opacity-0');
+            toast.classList.add('opacity-100');
+          }
+
+          setTimeout(() => {
+            emailSpan.innerText = originalText;
+            emailSpan.style.color = '';
+            if (toast) {
+              toast.classList.remove('opacity-100');
+              toast.classList.add('opacity-0');
+            }
+          }, 1500);
+        }
+      } catch (err) {
+        console.error('Error al copiar:', err);
+      }
+    });
+  });
+</script>
