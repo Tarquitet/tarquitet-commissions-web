@@ -1,21 +1,8 @@
 ---
+// src/components/Menu.astro
 ---
-<nav class="hidden md:flex gap-8 items-center">
-  <a href="#about" class="text-xs font-bold text-brand-light/60 hover:text-brand-red transition-all tracking-widest">INICIO</a>
-  <a href="#content-section" class="text-xs font-bold text-brand-light/60 hover:text-brand-red transition-all tracking-widest tab-trigger" data-tab="gallery">COMISIONES</a>
-  <a href="#content-section" class="text-xs font-bold text-brand-light/60 hover:text-brand-red transition-all tracking-widest tab-trigger" data-tab="pricing">PRECIOS</a>
-  <a href="#content-section" class="text-xs font-bold text-brand-light/60 hover:text-brand-red transition-all tracking-widest tab-trigger" data-tab="tos">TOS</a>
-  <a href="#contact" class="text-xs font-bold text-brand-light/60 hover:text-brand-red transition-all tracking-widest">CONTACTO</a>
-</nav>
-
-<script>
-  // Script para que el menú pueda avisar al Hero qué pestaña abrir
-  const triggers = document.querySelectorAll('.tab-trigger');
-  triggers.forEach(t => {
-    t.addEventListener('click', () => {
-      const tab = t.getAttribute('data-tab');
-      // Despachamos un evento personalizado global
-      window.dispatchEvent(new CustomEvent('change-tab', { detail: { tab } }));
-    });
-  });
-</script>
+<a href="#about" class="text-xs font-bold text-brand-light/60 hover:text-brand-red transition-all tracking-widest uppercase">Inicio</a>
+<a href="#portfolio" class="text-xs font-bold text-brand-light/60 hover:text-brand-red transition-all tracking-widest uppercase">Portafolio</a>
+<a href="#pricing" class="text-xs font-bold text-brand-light/60 hover:text-brand-red transition-all tracking-widest uppercase">Precios</a>
+<a href="#tos" class="text-xs font-bold text-brand-light/60 hover:text-brand-red transition-all tracking-widest uppercase">TOS</a>
+<a href="#contact" class="text-xs font-bold text-brand-light/60 hover:text-brand-red transition-all tracking-widest uppercase">Contacto</a>

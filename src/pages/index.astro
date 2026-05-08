@@ -1,86 +1,40 @@
 ---
 import Layout from '../layouts/Layout.astro';
 import Hero from '../components/Hero.astro';
-import DeviantCard from '../components/DeviantCard.astro';
-import PricingTable from '../components/PricingTable.astro';
-import TOS from '../components/TOS.astro';
-import { myArt } from '../data/gallery';
-import { commissionPrices } from '../data/pricing';
-
-const years = [...new Set(myArt.map(art => art.date))];
-const categories = [...new Set(myArt.map(art => art.category))];
+import TOSSection from '../components/TOSSection.tsx';
+import PortfolioGallery from '../components/PortfolioGallery.tsx';
+import PricingSection from '../components/PricingSection.tsx';
+import ContactSection from '../components/ContactSection.astro';
 ---
 
 <Layout title="Tarquitet | Comisiones de Arte">
     <Hero />
 
     <main class="space-y-40 pb-32">
-        
         <section id="portfolio" class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div class="flex flex-col lg:flex-row gap-12">
-                
-                <aside class="lg:w-1/4">
-                    <div class="sticky top-32 space-y-10">
-                        <div>
-                            <h3 class="text-brand-red font-black tracking-tighter text-5xl uppercase italic mb-2">Portafolio</h3>
-                        </div>
-
-                        <div class="space-y-6">
-                            <div>
-                                <h4 class="text-brand-light font-black text-xs uppercase tracking-widest mb-3 opacity-50">Explorar por Año</h4>
-                                <div class="flex flex-wrap lg:flex-col gap-2">
-                                    {years.map(year => (
-                                        <a href={`#year-${year}`} class="text-sm font-bold text-brand-light/60 hover:text-brand-red transition-all flex items-center gap-2 group">
-                                            <span class="w-2 h-0.5 bg-brand-red scale-x-0 group-hover:scale-x-100 transition-transform origin-left"></span>
-                                            {year}
-                                        </a>
-                                    ))}
-                                </div>
-                            </div>
-
-                            <div>
-                                <h4 class="text-brand-light font-black text-xs uppercase tracking-widest mb-3 opacity-50">Categorías</h4>
-                                <div class="flex flex-wrap lg:flex-col gap-2">
-                                    {categories.map(cat => (
-                                        <span class="text-[10px] font-bold text-brand-red/60 uppercase tracking-tighter border border-brand-red/20 px-2 py-1 rounded">
-                                            {cat}
-                                        </span>
-                                    ))}
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </aside>
-
-                <div class="lg:w-3/4 space-y-24">
-                    {years.map(year => (
-                        <div id={`year-${year}`} class="scroll-mt-32">
-                            <div class="flex items-center gap-4 mb-8">
-                                <h4 class="text-brand-light font-black text-3xl italic">{year}</h4>
-                                <div class="h-px bg-brand-red/20 flex-grow"></div>
-                            </div>
-                            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                                {myArt.filter(art => art.date === year).map(artwork => (
-                                    <DeviantCard art={artwork} />
-                                ))}
-                            </div>
-                        </div>
-                    ))}
-                </div>
+            <div class="flex flex-col mb-16 border-b border-brand-red/20 pb-6">
+                <h3 class="text-brand-red font-black tracking-tighter text-6xl uppercase italic">Portafolio</h3>
             </div>
+
+            <PortfolioGallery client:load />
         </section>
 
         <section id="pricing" class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div class="flex flex-col mb-16 border-b border-brand-red/20 pb-6">
-                <h3 class="text-brand-red font-black tracking-tighter text-5xl uppercase italic">Precios</h3>
+                <h3 class="text-brand-red font-black tracking-tighter text-6xl uppercase italic">Precios</h3>
             </div>
-            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-                {commissionPrices.map(item => <PricingTable item={item} />)}
-            </div>
+            
+            <PricingSection client:load />
         </section>
 
-        <section id="tos" class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <TOS />
+        <ContactSection />
+
+        <section id="tos" class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-40">
+            <div class="flex flex-col mb-16 border-b border-brand-red/20 pb-6">
+                <h3 class="text-brand-red font-black tracking-tighter text-6xl uppercase italic">T.O.S</h3>
+            </div>
+            
+            <TOSSection client:load />
         </section>
 
     </main>

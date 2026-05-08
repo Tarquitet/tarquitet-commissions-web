@@ -1,0 +1,70 @@
+---
+// src/components/ContactSection.astro
+---
+
+<section id="contact" class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-40">
+    <div class="flex flex-col mb-16 border-b border-brand-red/20 pb-6">
+        <h3 class="text-brand-red font-black tracking-tighter text-5xl md:text-6xl uppercase italic">Contacto & Límites</h3>
+    </div>
+
+    <div class="grid grid-cols-1 lg:grid-cols-2 gap-10">
+        
+        <div class="bg-[#050000] border border-brand-red/20 rounded-2xl p-8 relative overflow-hidden">
+            <h4 class="text-white font-black text-xl uppercase tracking-tighter italic mb-6">Parámetros de Contenido</h4>
+            <p class="text-brand-light/60 text-xs italic mb-8">
+                El trabajo de comisiones se realiza en mis tiempos libres. Por favor, revisa estas directrices antes de solicitar un cupo.
+            </p>
+
+            <div class="grid grid-cols-2 gap-6">
+                <div>
+                    <h5 class="text-brand-light font-bold text-xs uppercase tracking-widest mb-4 flex items-center gap-2">
+                        <span class="text-green-500">+</span> Permitido
+                    </h5>
+                    <ul class="space-y-3 text-sm text-brand-light/80">
+                        <li class="flex items-start gap-2"><span class="text-brand-red/50">/</span> Diseño de personajes</li>
+                        <li class="flex items-start gap-2"><span class="text-brand-red/50">/</span> Romance tradicional</li>
+                        <li class="flex items-start gap-2"><span class="text-brand-red/50">/</span> Sensual / Sugerente (Ej: Poses provocativas, bikinis)</li>
+                    </ul>
+                </div>
+                
+                <div>
+                    <h5 class="text-brand-light font-bold text-xs uppercase tracking-widest mb-4 flex items-center gap-2">
+                        <span class="text-brand-red">-</span> Restringido
+                    </h5>
+                    <ul class="space-y-3 text-sm text-brand-light/80">
+                        <li class="flex items-start gap-2"><span class="text-brand-red/50">/</span> Gore o violencia extrema</li>
+                        <li class="flex items-start gap-2"><span class="text-brand-red/50">/</span> Hentai o contenido sexual explícito</li>
+                        <li class="flex items-start gap-2"><span class="text-brand-red/50">/</span> Contenido o temáticas LGBT</li>
+                        <li class="flex items-start gap-2"><span class="text-brand-red/50">/</span> Besos explícitos</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+        <div class="flex flex-col justify-center gap-6">
+            <div class="bg-black border border-brand-red/20 p-6 rounded-xl flex items-center justify-between group">
+                <div class="flex flex-col">
+                    <span class="text-brand-red/50 font-mono text-[10px] tracking-widest uppercase mb-1">Discord Tag</span>
+                    <span class="text-white font-black text-2xl uppercase italic tracking-tighter">@tarquitet</span>
+                </div>
+            </div>
+
+            <div class="bg-black border border-brand-red/20 p-6 rounded-xl flex items-center justify-between group">
+                <div class="flex flex-col">
+                    <span class="text-brand-red/50 font-mono text-[10px] tracking-widest uppercase mb-1">Correo Electrónico</span>
+                    <a href="mailto:tu-correo@ejemplo.com" class="text-white font-black text-xl md:text-2xl uppercase italic tracking-tighter hover:text-brand-red transition-colors">
+                        contacto@tarquitet.com
+                    </a>
+                </div>
+            </div>
+
+            <a href="URL_DE_TU_GITHUB_PROJECTS" target="_blank" class="mt-4 group relative flex items-center justify-between bg-brand-red text-black p-6 rounded-xl transition-all duration-500 hover:shadow-[0_0_30px_rgba(220,38,38,0.4)]">
+                <div class="flex flex-col">
+                    <span class="font-mono text-[10px] font-black tracking-widest uppercase mb-1 opacity-60">Sistema de Seguimiento</span>
+                    <span class="font-black text-xl uppercase italic tracking-tighter">Ver Fila de Espera (Queue)</span>
+                </div>
+                <svg class="w-6 h-6 transform group-hover:translate-x-2 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M14 5l7 7m0 0l-7 7m7-7H3"></path></svg>
+            </a>
+        </div>
+    </div>
+</section>
