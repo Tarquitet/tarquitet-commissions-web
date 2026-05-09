@@ -1,8 +1,11 @@
 export interface ArtPiece {
-  title: string;
-  filename: string;
-  category: string;
-  date: string;
+  title: string; // Col A
+  filename: string; // Col B
+  category: string; // Col C (Macro: Sketch, FullColor, etc)
+  render_type: string; // Col D (New: NoShadow, Render, etc)
+  background: string; // Col E (New: None, SimpleBG, etc)
+  body_type: string; // Col F (New: Fullbody, Halfbody, etc)
+  date: string; // Col G (Year)
 }
 
 export interface PricingTier {
@@ -49,31 +52,26 @@ function parseCSV(text: string): string[][] {
 
     if (char === '"') {
       if (inQuotes && text[i + 1] === '"') {
-        // Comillas dobles escapadas dentro del texto ("")
         current += '"';
         i++;
       } else {
-        // Entrar o salir de las comillas
         inQuotes = !inQuotes;
       }
     } else if (char === ',' && !inQuotes) {
-      // Fin de la celda (columna)
       row.push(current.trim());
       current = '';
     } else if (char === '\n' && !inQuotes) {
-      // Fin de la fila
       row.push(current.trim());
       if (row.some((cell) => cell !== '')) result.push(row);
       row = [];
       current = '';
     } else if (char === '\r' && !inQuotes) {
-      // Ignorar retornos de carro fuera de comillas
+      // Ignorar retornos de carro
     } else {
       current += char;
     }
   }
 
-  // Añadir la última celda/fila si quedó pendiente
   if (current !== '' || row.length > 0) {
     row.push(current.trim());
     if (row.some((cell) => cell !== '')) result.push(row);
@@ -83,7 +81,7 @@ function parseCSV(text: string): string[][] {
 }
 
 // ============================================================================
-// FETCHERS DE DATOS
+// FETCHERS DE DATOS (CON SANITIZACIÓN DE CABECERAS)
 // ============================================================================
 
 export async function getSheetArtworks(): Promise<ArtPiece[]> {
@@ -99,7 +97,9 @@ export async function getSheetArtworks(): Promise<ArtPiece[]> {
       .map((row) => {
         const obj: any = {};
         headers.forEach((h, i) => {
-          obj[h] = row[i] || '';
+          // Limpieza estricta: forzar minúsculas y quitar espacios en blanco
+          const cleanHeader = h.toLowerCase().trim();
+          obj[cleanHeader] = row[i] || '';
         });
         return obj as ArtPiece;
       })
@@ -121,7 +121,8 @@ export async function getSheetPrices(): Promise<PricingTier[]> {
     return data.slice(1).map((row) => {
       const obj: any = {};
       headers.forEach((h, i) => {
-        obj[h] = row[i] || '';
+        const cleanHeader = h.toLowerCase().trim();
+        obj[cleanHeader] = row[i] || '';
       });
       return obj as PricingTier;
     });
@@ -141,7 +142,8 @@ export async function getSheetExtras(): Promise<ExtraItem[]> {
     return data.slice(1).map((row) => {
       const obj: any = {};
       headers.forEach((h, i) => {
-        obj[h] = row[i] || '';
+        const cleanHeader = h.toLowerCase().trim();
+        obj[cleanHeader] = row[i] || '';
       });
       return obj as ExtraItem;
     });
@@ -163,7 +165,8 @@ export async function getSheetTOS(): Promise<TOSItem[]> {
       .map((row) => {
         const obj: any = {};
         headers.forEach((h, i) => {
-          obj[h] = row[i] || '';
+          const cleanHeader = h.toLowerCase().trim();
+          obj[cleanHeader] = row[i] || '';
         });
         if (!obj.type) obj.type = 'I';
         return obj as TOSItem;
