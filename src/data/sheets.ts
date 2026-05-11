@@ -1,11 +1,11 @@
 export interface ArtPiece {
-  title: string; // Col A
-  filename: string; // Col B
-  category: string; // Col C (Macro: Sketch, FullColor, etc)
-  render_type: string; // Col D (New: NoShadow, Render, etc)
-  background: string; // Col E (New: None, SimpleBG, etc)
-  body_type: string; // Col F (New: Fullbody, Halfbody, etc)
-  date: string; // Col G (Year)
+  title: string;
+  filename: string;
+  category: string;
+  render_type: string;
+  background: string;
+  body_type: string;
+  date: string;
 }
 
 export interface PricingTier {
@@ -29,17 +29,64 @@ export interface TOSItem {
   update_date: string;
 }
 
-const ART_SHEET_URL =
-  'https://docs.google.com/spreadsheets/d/e/2PACX-1vQlmh6ewrKoqQ_H35C-6QRHrI5OdzfA8ZDrZZohRxGr-m0NP-1300tvufqQeu3sKfAKQRQR68F_-_l4/pub?gid=0&single=true&output=csv';
-const PRICING_SHEET_URL =
-  'https://docs.google.com/spreadsheets/d/e/2PACX-1vQlmh6ewrKoqQ_H35C-6QRHrI5OdzfA8ZDrZZohRxGr-m0NP-1300tvufqQeu3sKfAKQRQR68F_-_l4/pub?gid=835010888&single=true&output=csv';
-const EXTRAS_SHEET_URL =
-  'https://docs.google.com/spreadsheets/d/e/2PACX-1vQlmh6ewrKoqQ_H35C-6QRHrI5OdzfA8ZDrZZohRxGr-m0NP-1300tvufqQeu3sKfAKQRQR68F_-_l4/pub?gid=1100543912&single=true&output=csv';
-const TOS_SHEET_URL =
-  'https://docs.google.com/spreadsheets/d/e/2PACX-1vQlmh6ewrKoqQ_H35C-6QRHrI5OdzfA8ZDrZZohRxGr-m0NP-1300tvufqQeu3sKfAKQRQR68F_-_l4/pub?gid=299036177&single=true&output=csv';
+export interface YCHPiece {
+  title: string;
+  filename: string;
+  price: string;
+  body_type: string;
+}
+
+export interface GuidelineItem {
+  type: 'DO' | 'DONT';
+  content: string;
+}
+
+export interface CalcOption {
+  category: string;
+  label: string;
+  value: string;
+  value_discount: string;
+}
+
+// URLs BASE
+const BASE_URL =
+  'https://docs.google.com/spreadsheets/d/e/2PACX-1vQlmh6ewrKoqQ_H35C-6QRHrI5OdzfA8ZDrZZohRxGr-m0NP-1300tvufqQeu3sKfAKQRQR68F_-_l4/pub?output=csv';
+
+const GIDS = {
+  ART: '0',
+  PRICING: '835010888',
+  EXTRAS: '1100543912',
+  TOS: '299036177',
+  YCH: '151722103',
+  GUIDELINES: '1007742108',
+  CALCULATOR: '1138422431',
+};
 
 // ============================================================================
-// MOTOR DE LECTURA CSV (Soporta comas y saltos de línea dentro de las celdas)
+// FUNCIÓN DE AYUDA: FETCH ANTICACHÉ
+// ============================================================================
+async function fetchFreshCSV(gid: string): Promise<string[][]> {
+  // Añadimos un parámetro de tiempo único (&t=...) para engañar al caché
+  const timestamp = new Date().getTime();
+  const url = `${BASE_URL}&gid=${gid}&cache_buster=${timestamp}`;
+
+  try {
+    const response = await fetch(url, {
+      cache: 'no-store', // Instrucción directa al navegador para no guardar copia
+      headers: { pragma: 'no-cache', 'cache-control': 'no-cache' },
+    });
+
+    if (!response.ok) return [];
+    const text = await response.text();
+    return parseCSV(text);
+  } catch (e) {
+    console.error(`Error en fetch para GID ${gid}:`, e);
+    return [];
+  }
+}
+
+// ============================================================================
+// MOTOR DE LECTURA CSV
 // ============================================================================
 function parseCSV(text: string): string[][] {
   const result: string[][] = [];
@@ -49,7 +96,6 @@ function parseCSV(text: string): string[][] {
 
   for (let i = 0; i < text.length; i++) {
     const char = text[i];
-
     if (char === '"') {
       if (inQuotes && text[i + 1] === '"') {
         current += '"';
@@ -66,7 +112,7 @@ function parseCSV(text: string): string[][] {
       row = [];
       current = '';
     } else if (char === '\r' && !inQuotes) {
-      // Ignorar retornos de carro
+      // Ignorar
     } else {
       current += char;
     }
@@ -76,103 +122,117 @@ function parseCSV(text: string): string[][] {
     row.push(current.trim());
     if (row.some((cell) => cell !== '')) result.push(row);
   }
-
   return result;
 }
 
 // ============================================================================
-// FETCHERS DE DATOS (CON SANITIZACIÓN DE CABECERAS)
+// FETCHERS ACTUALIZADOS
 // ============================================================================
 
 export async function getSheetArtworks(): Promise<ArtPiece[]> {
-  try {
-    const response = await fetch(ART_SHEET_URL);
-    if (!response.ok) return [];
-    const data = parseCSV(await response.text());
-    if (data.length < 2) return [];
+  const data = await fetchFreshCSV(GIDS.ART);
+  if (data.length < 2) return [];
 
-    const headers = data[0];
-    return data
-      .slice(1)
-      .map((row) => {
-        const obj: any = {};
-        headers.forEach((h, i) => {
-          // Limpieza estricta: forzar minúsculas y quitar espacios en blanco
-          const cleanHeader = h.toLowerCase().trim();
-          obj[cleanHeader] = row[i] || '';
-        });
-        return obj as ArtPiece;
-      })
-      .filter((item) => item.title && item.date && item.filename)
-      .sort((a, b) => parseInt(b.date) - parseInt(a.date));
-  } catch (e) {
-    return [];
-  }
+  const headers = data[0];
+  return data
+    .slice(1)
+    .map((row) => {
+      const obj: any = {};
+      headers.forEach((h, i) => {
+        obj[h.toLowerCase().trim()] = row[i] || '';
+      });
+      return obj as ArtPiece;
+    })
+    .filter((item) => item.title && item.date && item.filename)
+    .sort((a, b) => parseInt(b.date) - parseInt(a.date));
 }
 
 export async function getSheetPrices(): Promise<PricingTier[]> {
-  try {
-    const response = await fetch(PRICING_SHEET_URL);
-    if (!response.ok) return [];
-    const data = parseCSV(await response.text());
-    if (data.length < 2) return [];
+  const data = await fetchFreshCSV(GIDS.PRICING);
+  if (data.length < 2) return [];
 
-    const headers = data[0];
-    return data.slice(1).map((row) => {
-      const obj: any = {};
-      headers.forEach((h, i) => {
-        const cleanHeader = h.toLowerCase().trim();
-        obj[cleanHeader] = row[i] || '';
-      });
-      return obj as PricingTier;
+  const headers = data[0];
+  return data.slice(1).map((row) => {
+    const obj: any = {};
+    headers.forEach((h, i) => {
+      obj[h.toLowerCase().trim()] = row[i] || '';
     });
-  } catch (e) {
-    return [];
-  }
+    return obj as PricingTier;
+  });
 }
 
 export async function getSheetExtras(): Promise<ExtraItem[]> {
-  try {
-    const response = await fetch(EXTRAS_SHEET_URL);
-    if (!response.ok) return [];
-    const data = parseCSV(await response.text());
-    if (data.length < 2) return [];
+  const data = await fetchFreshCSV(GIDS.EXTRAS); // <--- AHORA VIENE FRESCO
+  if (data.length < 2) return [];
 
-    const headers = data[0];
-    return data.slice(1).map((row) => {
-      const obj: any = {};
-      headers.forEach((h, i) => {
-        const cleanHeader = h.toLowerCase().trim();
-        obj[cleanHeader] = row[i] || '';
-      });
-      return obj as ExtraItem;
+  const headers = data[0];
+  return data.slice(1).map((row) => {
+    const obj: any = {};
+    headers.forEach((h, i) => {
+      obj[h.toLowerCase().trim()] = row[i] || '';
     });
-  } catch (e) {
-    return [];
-  }
+    return obj as ExtraItem;
+  });
 }
 
 export async function getSheetTOS(): Promise<TOSItem[]> {
-  try {
-    const response = await fetch(TOS_SHEET_URL);
-    if (!response.ok) return [];
-    const data = parseCSV(await response.text());
-    if (data.length < 2) return [];
+  const data = await fetchFreshCSV(GIDS.TOS);
+  if (data.length < 2) return [];
 
-    const headers = data[0];
-    return data
-      .slice(1)
-      .map((row) => {
-        const obj: any = {};
-        headers.forEach((h, i) => {
-          const cleanHeader = h.toLowerCase().trim();
-          obj[cleanHeader] = row[i] || '';
-        });
-        if (!obj.type) obj.type = 'I';
-        return obj as TOSItem;
-      })
-      .sort((a, b) => parseInt(a.order || '0') - parseInt(b.order || '0'));
-  } catch (e) {
-    return [];
-  }
+  const headers = data[0];
+  return data
+    .slice(1)
+    .map((row) => {
+      const obj: any = {};
+      headers.forEach((h, i) => {
+        obj[h.toLowerCase().trim()] = row[i] || '';
+      });
+      if (!obj.type) obj.type = 'I';
+      return obj as TOSItem;
+    })
+    .sort((a, b) => parseInt(a.order || '0') - parseInt(b.order || '0'));
+}
+
+export async function getSheetYCH(): Promise<YCHPiece[]> {
+  const data = await fetchFreshCSV(GIDS.YCH);
+  if (data.length < 2) return [];
+
+  const headers = data[0];
+  return data
+    .slice(1)
+    .map((row) => {
+      const obj: any = {};
+      headers.forEach((h, i) => {
+        obj[h.toLowerCase().trim()] = row[i] || '';
+      });
+      return obj as YCHPiece;
+    })
+    .filter((item) => item.title && item.filename);
+}
+
+export async function getSheetGuidelines(): Promise<GuidelineItem[]> {
+  const data = await fetchFreshCSV(GIDS.GUIDELINES);
+  if (data.length < 2) return [];
+
+  const headers = data[0];
+  return data.slice(1).map((row) => {
+    const obj: any = {};
+    headers.forEach((h, i) => {
+      obj[h.toLowerCase().trim()] = row[i] || '';
+    });
+    return obj as GuidelineItem;
+  });
+}
+
+export async function getCalculatorConfig(): Promise<CalcOption[]> {
+  const data = await fetchFreshCSV(GIDS.CALCULATOR);
+  if (data.length < 2) return [];
+  const headers = data[0].map((h) => h.toLowerCase().trim());
+  return data.slice(1).map((row) => {
+    const obj: any = {};
+    headers.forEach((h, i) => {
+      obj[h] = row[i] || '';
+    });
+    return obj as CalcOption;
+  });
 }

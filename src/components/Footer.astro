@@ -3,23 +3,23 @@ import { artisticNetworks } from '../data/socials';
 import type { SocialNetwork } from '../data/socials';
 ---
 
-<footer class="w-full bg-brand-black border-t border-brand-gray/50 mt-20 pt-16 pb-8 relative">
-  <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+<footer class="w-full bg-black border-t-2 border-brand-red pt-8 pb-6 relative">
+  <div class="max-w-7xl mx-auto px-4">
     
-    <div class="grid grid-cols-1 md:grid-cols-3 gap-12 text-center mb-16 items-center">
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-8 text-center items-center mb-10">
       
-      <div class="flex flex-col md:items-start items-center gap-3">
-        <span class="text-[10px] font-bold text-brand-red uppercase tracking-[0.2em]">Correo</span>
-        <div class="flex items-center gap-2 group cursor-pointer copy-trigger" data-copy="contact@tarquitet.com">
-          <span class="text-brand-light group-hover:text-brand-red transition-colors text-lg font-medium email-text">
-            contact@tarquitet.com
+      <div class="flex flex-col md:items-start items-center gap-2">
+        <span class="text-[10px] font-black text-brand-red uppercase tracking-[0.2em]">Discord</span>
+        <div class="flex items-center gap-2 group cursor-pointer copy-trigger" data-copy="tarquitet">
+          <span class="text-white group-hover:text-brand-red transition-colors text-xl font-black italic uppercase copy-text">
+            @tarquitet
           </span>
-          <svg class="w-4 h-4 text-brand-light/30 group-hover:text-brand-red transition-colors" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z"></path></svg>
+          <svg class="w-4 h-4 text-white group-hover:text-brand-red" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z"></path></svg>
         </div>
       </div>
 
-      <div class="flex flex-col items-center gap-4">
-        <span class="text-[10px] font-bold text-brand-red uppercase tracking-[0.2em]">Redes Artísticas</span>
+      <div class="flex flex-col items-center gap-3">
+        <span class="text-[10px] font-black text-brand-red uppercase tracking-[0.2em]">Redes</span>
         <div class="flex gap-6 items-center">
           {artisticNetworks.map((network: SocialNetwork) => (
             <a 
@@ -27,7 +27,7 @@ import type { SocialNetwork } from '../data/socials';
               target="_blank" 
               rel="noopener noreferrer" 
               title={network.name}
-              class="w-6 h-6 bg-brand-light/60 hover:bg-brand-red transition-all duration-300"
+              class="w-6 h-6 bg-white hover:bg-brand-red transition-all duration-300"
               style={`
                 mask-image: url(/icons/${network.icon}); 
                 mask-repeat: no-repeat; 
@@ -44,27 +44,32 @@ import type { SocialNetwork } from '../data/socials';
         </div>
       </div>
 
-      <div class="flex flex-col md:items-end items-center gap-3">
-        <span class="text-[10px] font-bold text-brand-red uppercase tracking-[0.2em]">Portafolio Profesional</span>
-        <div class="flex gap-5">
-          <a href="https://tarquitet.com" target="_blank" rel="noopener noreferrer" class="text-brand-light font-bold text-sm tracking-wide hover:text-brand-red underline underline-offset-8 decoration-1 decoration-brand-gray hover:decoration-brand-red transition-all uppercase">
-            TARQUITET.COM
-          </a>
+      <div class="flex flex-col md:items-end items-center gap-2">
+        <span class="text-[10px] font-black text-brand-red uppercase tracking-[0.2em]">Correo</span>
+        <div class="flex items-center gap-2 group cursor-pointer copy-trigger" data-copy="contacto@tarquitet.com">
+          <span class="text-white group-hover:text-brand-red transition-colors text-xl font-black italic uppercase copy-text">
+            contact@tarquitet.com
+          </span>
+          <svg class="w-4 h-4 text-white group-hover:text-brand-red" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z"></path></svg>
         </div>
       </div>
 
     </div>
 
-    <div class="border-t border-brand-gray/30 pt-8 flex justify-center">
-      <div class="text-sm font-bold tracking-widest text-brand-light uppercase">
+    {/* LÍNEA FINAL COMPACTA */}
+    <div class="border-t border-white/10 pt-6 flex flex-col md:flex-row justify-between items-center gap-4">
+      <div class="text-[11px] font-black tracking-widest text-white uppercase italic">
         TARQUITET &copy; <span id="current-year" class="text-brand-red"></span>
       </div>
+      <a href="https://tarquitet.com" target="_blank" class="text-white/40 hover:text-white font-mono text-[9px] uppercase tracking-[0.3em] transition-colors">
+        Portafolio Profesional
+      </a>
     </div>
     
   </div>
 
-  <div id="copy-toast" class="fixed bottom-8 left-1/2 -translate-x-1/2 bg-brand-red text-white px-6 py-3 rounded-full font-bold text-sm tracking-widest uppercase opacity-0 pointer-events-none transition-opacity duration-300 z-50 shadow-[0_0_20px_rgba(220,38,38,0.4)]">
-    ¡Copiado al portapapeles!
+  <div id="copy-toast" class="fixed bottom-8 left-1/2 -translate-x-1/2 bg-white text-black px-8 py-3 rounded-lg font-black text-xs tracking-[0.2em] uppercase opacity-0 pointer-events-none transition-all duration-300 z-50 shadow-[0_0_30px_rgba(255,255,255,0.2)]">
+    ¡Copiado!
   </div>
 </footer>
 
@@ -75,40 +80,38 @@ import type { SocialNetwork } from '../data/socials';
     yearElement.textContent = new Date().getFullYear().toString();
   }
 
-  // Lógica Copy (Vanilla JS de tu portafolio)
+  // Lógica Copy mejorada
   const copyTriggers = document.querySelectorAll('.copy-trigger');
   const toast = document.getElementById('copy-toast');
 
   copyTriggers.forEach(trigger => {
     trigger.addEventListener('click', async () => {
       const textToCopy = trigger.getAttribute('data-copy') || '';
-      const emailSpan = trigger.querySelector('.email-text') as HTMLElement | null;
+      const textSpan = trigger.querySelector('.copy-text') as HTMLElement | null;
 
-      if (!emailSpan || !textToCopy) return;
+      if (!textSpan || !textToCopy) return;
 
-      const originalText = emailSpan.innerText;
+      const originalText = textSpan.innerText;
 
       try {
-        if (navigator.clipboard) {
-          await navigator.clipboard.writeText(textToCopy);
-          
-          emailSpan.innerText = '¡COPIADO!';
-          emailSpan.style.color = '#22c55e';
+        await navigator.clipboard.writeText(textToCopy);
+        
+        textSpan.innerText = '¡COPIADO!';
+        textSpan.classList.add('text-green-500');
 
-          if (toast) {
-            toast.classList.remove('opacity-0');
-            toast.classList.add('opacity-100');
-          }
-
-          setTimeout(() => {
-            emailSpan.innerText = originalText;
-            emailSpan.style.color = '';
-            if (toast) {
-              toast.classList.remove('opacity-100');
-              toast.classList.add('opacity-0');
-            }
-          }, 1500);
+        if (toast) {
+          toast.classList.remove('opacity-0', 'translate-y-4');
+          toast.classList.add('opacity-100', 'translate-y-0');
         }
+
+        setTimeout(() => {
+          textSpan.innerText = originalText;
+          textSpan.classList.remove('text-green-500');
+          if (toast) {
+            toast.classList.remove('opacity-100', 'translate-y-0');
+            toast.classList.add('opacity-0', 'translate-y-4');
+          }
+        }, 1200);
       } catch (err) {
         console.error('Error al copiar:', err);
       }

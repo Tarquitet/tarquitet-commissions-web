@@ -4,13 +4,25 @@ import Hero from '../components/Hero.astro';
 import TOSSection from '../components/TOSSection.tsx';
 import PortfolioGallery from '../components/PortfolioGallery.tsx';
 import PricingSection from '../components/PricingSection.tsx';
-import ContactSection from '../components/ContactSection.astro';
+import GuidelinesSection from '../components/GuidelinesSection';
+import YCHSlider from '../components/YCHSlider.tsx';
+import PriceCalculator from '../components/PriceCalculator.tsx';
+import PaymentMethods from '../components/PaymentMethods.tsx';
 ---
 
 <Layout title="Tarquitet | Comisiones de Arte">
     <Hero />
 
     <main class="space-y-40 pb-32">
+
+        <section id="commissions" class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex flex-col mb-16 border-b border-brand-red/20 pb-6">
+                <h3 class="text-brand-red font-black tracking-tighter text-6xl uppercase italic">QUE SÍ Y NO DIBUJO</h3>
+            </div>
+
+            <GuidelinesSection client:load />
+        </section>
+
         <section id="portfolio" class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div class="flex flex-col mb-16 border-b border-brand-red/20 pb-6">
                 <h3 class="text-brand-red font-black tracking-tighter text-6xl uppercase italic">Portafolio</h3>
@@ -27,15 +39,31 @@ import ContactSection from '../components/ContactSection.astro';
             <PricingSection client:load />
         </section>
 
-        <ContactSection />
+        <section id="calculator" class="container mx-auto px-4">
+            <PriceCalculator client:load/>
+        </section>
 
-        <section id="tos" class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-40">
+        <section id="ych" class="container mx-auto px-4">
             <div class="flex flex-col mb-16 border-b border-brand-red/20 pb-6">
-                <h3 class="text-brand-red font-black tracking-tighter text-6xl uppercase italic">T.O.S</h3>
+                <h3 class="text-brand-red font-black tracking-tighter text-6xl uppercase italic">Poses/bases predefinidas (Y.C.H)</h3>
+            </div>
+            <YCHSlider client:visible />
+        </section>
+
+        <section id="payments" class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex flex-col mb-16 border-b border-brand-red/20 pb-6">
+                <h3 class="text-brand-red font-black tracking-tighter text-6xl uppercase italic">Métodos de Pago</h3>
+            </div>
+
+            <PaymentMethods client:load />
+        </section>
+
+        <section id="tos" class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex flex-col mb-16 border-b border-brand-red/20 pb-6">
+                <h3 class="text-brand-red font-black tracking-tighter text-6xl uppercase italic">Términos y Condiciones</h3>
             </div>
             
             <TOSSection client:load />
         </section>
-
     </main>
 </Layout>
