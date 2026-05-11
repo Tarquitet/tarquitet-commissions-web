@@ -8,7 +8,6 @@ interface Step1Props {
 }
 
 export default memo(function Step1Base({ prices, baseSelection, setBaseSelection }: Step1Props) {
-  // Obtenemos los encabezados (Tiers) y las filas (Cuerpos) únicos
   const tiers = Array.from(new Set(prices.map((p) => p.tier))).filter(Boolean);
   const bodies = Array.from(new Set(prices.map((p) => p.description))).filter(Boolean);
 
@@ -44,27 +43,17 @@ export default memo(function Step1Base({ prices, baseSelection, setBaseSelection
                   const isSelected =
                     baseSelection?.original_price === priceItem?.original_price &&
                     baseSelection?.tier === priceItem?.tier;
-
                   return (
                     <td key={finish} className={`p-2 ${idx !== arr.length - 1 ? 'border-b border-white/5' : ''}`}>
                       {priceItem ? (
                         <button
                           onClick={() => setBaseSelection(priceItem)}
-                          className={`w-full py-4 px-2 rounded-2xl border transition-all duration-300 flex flex-col justify-center items-center gap-1 ${
-                            isSelected
-                              ? 'bg-brand-red border-brand-red shadow-[0_0_25px_rgba(220,38,38,0.4)] text-black scale-105 z-10'
-                              : 'bg-black/40 border-white/5 hover:border-brand-red/50 text-white hover:bg-black/60'
-                          }`}
+                          className={`w-full py-4 px-2 rounded-2xl border transition-all duration-300 flex flex-col justify-center items-center gap-1 ${isSelected ? 'bg-brand-red border-brand-red text-black scale-105 z-10' : 'bg-black/40 border-white/5 hover:border-brand-red/50 text-white'}`}
                         >
                           <span
                             className={`font-mono text-sm sm:text-base font-black ${isSelected ? 'text-black' : 'text-brand-red'}`}
                           >
                             {priceItem.discount_price}
-                          </span>
-                          <span
-                            className={`text-[8px] font-bold uppercase tracking-tighter ${isSelected ? 'text-black/60' : 'text-white/20'}`}
-                          >
-                            Seleccionar
                           </span>
                         </button>
                       ) : (

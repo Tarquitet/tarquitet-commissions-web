@@ -10,6 +10,7 @@ export const useCommissionLogic = (prices: PricingTier[], config: CalcOption[]) 
   const [extraChars, setExtraChars] = useState(1);
   const [ychSelection, setYchSelection] = useState<YCHPiece | null>(null);
   const [paymentMethod, setPaymentMethod] = useState('PayPal');
+  const [isConfirmed, setIsConfirmed] = useState(false);
 
   // 2. REGLA DEL FULLCOLOR (Detectamos si la base elegida es Fullcolor)
   const isFullcolor = useMemo(() => {
@@ -127,6 +128,8 @@ export const useCommissionLogic = (prices: PricingTier[], config: CalcOption[]) 
     setYchSelection,
     paymentMethod,
     setPaymentMethod,
+    isConfirmed,
+    setIsConfirmed,
     total,
     groupedOptions,
     isFullcolor,

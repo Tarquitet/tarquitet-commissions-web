@@ -1,5 +1,5 @@
 import React from 'react';
-import OptionPill from './OptionPill';
+import { OptionPill } from './OptionPill';
 
 export const CategoryGrid = ({ title, options, selection, onSelect, isMulti = false }: any) => {
   if (!options || options.length === 0) return null;
