@@ -45,16 +45,17 @@ export const preventActions = (e: React.SyntheticEvent) => {
   return false;
 };
 
-export const getImagePath = (filename: string): string => {
+export const getImagePath = (filename: string) => {
   if (!filename) return '';
 
-  if (filename.startsWith('http')) {
-    const baseId = filename.split('id=')[1]?.split('&')[0];
-    if (baseId) {
-      return `https://drive.google.com/thumbnail?id=${baseId}&sz=w1200`;
-    }
-    return filename;
-  }
+  // Si ya es un enlace externo (imgur, etc), lo dejamos tranquilo
+  if (filename.startsWith('http')) return filename;
 
-  return `/portfolio/${filename}`;
+  // Tu enlace original de Google Drive
+  const driveUrl = `https://drive.google.com/uc?export=view&id=${filename}`;
+
+  // LA MAGIA: Envolvemos el enlace en el CDN
+  // output=webp la hace ultra ligera
+  // afil=true ayuda a los bordes de tus dibujos transparentes
+  return `https://wsrv.nl/?url=${encodeURIComponent(driveUrl)}&output=webp&default=${encodeURIComponent(driveUrl)}`;
 };

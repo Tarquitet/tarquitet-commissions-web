@@ -48,6 +48,9 @@ export interface CalcOption {
   value_discount: string;
 }
 
+// URL DEL FORMULARIO DE GOOGLE PARA COMISIONAR
+export const GOOGLE_FORM_URL = 'https://forms.gle/QLrFdUaHsva3t8Dg8';
+
 // URLs BASE
 const BASE_URL =
   'https://docs.google.com/spreadsheets/d/e/2PACX-1vQlmh6ewrKoqQ_H35C-6QRHrI5OdzfA8ZDrZZohRxGr-m0NP-1300tvufqQeu3sKfAKQRQR68F_-_l4/pub?output=csv';
@@ -61,6 +64,17 @@ const GIDS = {
   GUIDELINES: '1007742108',
   CALCULATOR: '1138422431',
 };
+
+// ============================================================================
+// VARIABLES DE MEMORIA (CACHÉ INTERNO DEL CÓDIGO)
+// ============================================================================
+let artworksCache: Promise<ArtPiece[]> | null = null;
+let pricesCache: Promise<PricingTier[]> | null = null;
+let extrasCache: Promise<ExtraItem[]> | null = null;
+let tosCache: Promise<TOSItem[]> | null = null;
+let ychCache: Promise<YCHPiece[]> | null = null;
+let guidelinesCache: Promise<GuidelineItem[]> | null = null;
+let calcConfigCache: Promise<CalcOption[]> | null = null;
 
 // ============================================================================
 // FUNCIÓN DE AYUDA: FETCH ANTICACHÉ
@@ -126,113 +140,142 @@ function parseCSV(text: string): string[][] {
 }
 
 // ============================================================================
-// FETCHERS ACTUALIZADOS
+// FETCHERS ACTUALIZADOS (AHORA CON MEMORIA)
 // ============================================================================
 
-export async function getSheetArtworks(): Promise<ArtPiece[]> {
-  const data = await fetchFreshCSV(GIDS.ART);
-  if (data.length < 2) return [];
+export function getSheetArtworks(): Promise<ArtPiece[]> {
+  if (!artworksCache) {
+    artworksCache = (async () => {
+      const data = await fetchFreshCSV(GIDS.ART);
+      if (data.length < 2) return [];
+      const headers = data[0];
+      return data
+        .slice(1)
+        .map((row) => {
+          const obj: any = {};
+          headers.forEach((h, i) => {
+            obj[h.toLowerCase().trim()] = row[i] || '';
+          });
+          return obj as ArtPiece;
+        })
+        .filter((item) => item.title && item.date && item.filename)
+        .sort((a, b) => parseInt(b.date) - parseInt(a.date));
+    })();
+  }
+  return artworksCache;
+}
 
-  const headers = data[0];
-  return data
-    .slice(1)
-    .map((row) => {
-      const obj: any = {};
-      headers.forEach((h, i) => {
-        obj[h.toLowerCase().trim()] = row[i] || '';
+export function getSheetPrices(): Promise<PricingTier[]> {
+  if (!pricesCache) {
+    pricesCache = (async () => {
+      const data = await fetchFreshCSV(GIDS.PRICING);
+      if (data.length < 2) return [];
+      const headers = data[0];
+      return data.slice(1).map((row) => {
+        const obj: any = {};
+        headers.forEach((h, i) => {
+          obj[h.toLowerCase().trim()] = row[i] || '';
+        });
+        return obj as PricingTier;
       });
-      return obj as ArtPiece;
-    })
-    .filter((item) => item.title && item.date && item.filename)
-    .sort((a, b) => parseInt(b.date) - parseInt(a.date));
+    })();
+  }
+  return pricesCache;
 }
 
-export async function getSheetPrices(): Promise<PricingTier[]> {
-  const data = await fetchFreshCSV(GIDS.PRICING);
-  if (data.length < 2) return [];
-
-  const headers = data[0];
-  return data.slice(1).map((row) => {
-    const obj: any = {};
-    headers.forEach((h, i) => {
-      obj[h.toLowerCase().trim()] = row[i] || '';
-    });
-    return obj as PricingTier;
-  });
-}
-
-export async function getSheetExtras(): Promise<ExtraItem[]> {
-  const data = await fetchFreshCSV(GIDS.EXTRAS); // <--- AHORA VIENE FRESCO
-  if (data.length < 2) return [];
-
-  const headers = data[0];
-  return data.slice(1).map((row) => {
-    const obj: any = {};
-    headers.forEach((h, i) => {
-      obj[h.toLowerCase().trim()] = row[i] || '';
-    });
-    return obj as ExtraItem;
-  });
-}
-
-export async function getSheetTOS(): Promise<TOSItem[]> {
-  const data = await fetchFreshCSV(GIDS.TOS);
-  if (data.length < 2) return [];
-
-  const headers = data[0];
-  return data
-    .slice(1)
-    .map((row) => {
-      const obj: any = {};
-      headers.forEach((h, i) => {
-        obj[h.toLowerCase().trim()] = row[i] || '';
+export function getSheetExtras(): Promise<ExtraItem[]> {
+  if (!extrasCache) {
+    extrasCache = (async () => {
+      const data = await fetchFreshCSV(GIDS.EXTRAS);
+      if (data.length < 2) return [];
+      const headers = data[0];
+      return data.slice(1).map((row) => {
+        const obj: any = {};
+        headers.forEach((h, i) => {
+          obj[h.toLowerCase().trim()] = row[i] || '';
+        });
+        return obj as ExtraItem;
       });
-      if (!obj.type) obj.type = 'I';
-      return obj as TOSItem;
-    })
-    .sort((a, b) => parseInt(a.order || '0') - parseInt(b.order || '0'));
+    })();
+  }
+  return extrasCache;
 }
 
-export async function getSheetYCH(): Promise<YCHPiece[]> {
-  const data = await fetchFreshCSV(GIDS.YCH);
-  if (data.length < 2) return [];
+export function getSheetTOS(): Promise<TOSItem[]> {
+  if (!tosCache) {
+    tosCache = (async () => {
+      const data = await fetchFreshCSV(GIDS.TOS);
+      if (data.length < 2) return [];
+      const headers = data[0];
+      return data
+        .slice(1)
+        .map((row) => {
+          const obj: any = {};
+          headers.forEach((h, i) => {
+            obj[h.toLowerCase().trim()] = row[i] || '';
+          });
+          if (!obj.type) obj.type = 'I';
+          return obj as TOSItem;
+        })
+        .sort((a, b) => parseInt(a.order || '0') - parseInt(b.order || '0'));
+    })();
+  }
+  return tosCache;
+}
 
-  const headers = data[0];
-  return data
-    .slice(1)
-    .map((row) => {
-      const obj: any = {};
-      headers.forEach((h, i) => {
-        obj[h.toLowerCase().trim()] = row[i] || '';
+export function getSheetYCH(): Promise<YCHPiece[]> {
+  if (!ychCache) {
+    ychCache = (async () => {
+      const data = await fetchFreshCSV(GIDS.YCH);
+      if (data.length < 2) return [];
+      const headers = data[0];
+      return data
+        .slice(1)
+        .map((row) => {
+          const obj: any = {};
+          headers.forEach((h, i) => {
+            obj[h.toLowerCase().trim()] = row[i] || '';
+          });
+          return obj as YCHPiece;
+        })
+        .filter((item) => item.title && item.filename);
+    })();
+  }
+  return ychCache;
+}
+
+export function getSheetGuidelines(): Promise<GuidelineItem[]> {
+  if (!guidelinesCache) {
+    guidelinesCache = (async () => {
+      const data = await fetchFreshCSV(GIDS.GUIDELINES);
+      if (data.length < 2) return [];
+      const headers = data[0];
+      return data.slice(1).map((row) => {
+        const obj: any = {};
+        headers.forEach((h, i) => {
+          obj[h.toLowerCase().trim()] = row[i] || '';
+        });
+        return obj as GuidelineItem;
       });
-      return obj as YCHPiece;
-    })
-    .filter((item) => item.title && item.filename);
+    })();
+  }
+  return guidelinesCache;
 }
 
-export async function getSheetGuidelines(): Promise<GuidelineItem[]> {
-  const data = await fetchFreshCSV(GIDS.GUIDELINES);
-  if (data.length < 2) return [];
-
-  const headers = data[0];
-  return data.slice(1).map((row) => {
-    const obj: any = {};
-    headers.forEach((h, i) => {
-      obj[h.toLowerCase().trim()] = row[i] || '';
-    });
-    return obj as GuidelineItem;
-  });
-}
-
-export async function getCalculatorConfig(): Promise<CalcOption[]> {
-  const data = await fetchFreshCSV(GIDS.CALCULATOR);
-  if (data.length < 2) return [];
-  const headers = data[0].map((h) => h.toLowerCase().trim());
-  return data.slice(1).map((row) => {
-    const obj: any = {};
-    headers.forEach((h, i) => {
-      obj[h] = row[i] || '';
-    });
-    return obj as CalcOption;
-  });
+export function getCalculatorConfig(): Promise<CalcOption[]> {
+  if (!calcConfigCache) {
+    calcConfigCache = (async () => {
+      const data = await fetchFreshCSV(GIDS.CALCULATOR);
+      if (data.length < 2) return [];
+      const headers = data[0].map((h) => h.toLowerCase().trim());
+      return data.slice(1).map((row) => {
+        const obj: any = {};
+        headers.forEach((h, i) => {
+          obj[h] = row[i] || '';
+        });
+        return obj as CalcOption;
+      });
+    })();
+  }
+  return calcConfigCache;
 }

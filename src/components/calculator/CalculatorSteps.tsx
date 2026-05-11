@@ -1,4 +1,5 @@
 import React from 'react';
+import StepLights from './steps/3_Lights';
 
 // EL NUEVO BOTÓN (Estilo píldora de portafolio)
 export const OptionPill = ({ label, value, isSelected, onClick }: any) => {

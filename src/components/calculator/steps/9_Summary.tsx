@@ -1,5 +1,5 @@
 import React from 'react';
-import StepLayout from '../../calculator/StepLayout';
+import StepLayout from '../StepLayout';
 
 export default function Step7Summary({ total, paymentMethod, setPaymentMethod }: any) {
   return (

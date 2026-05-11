@@ -1,3 +1,5 @@
+// PortfolioGallery.tsx
+
 import { useState, useMemo, useEffect, useRef, memo } from 'react';
 import { getSheetArtworks, type ArtPiece } from '../data/sheets';
 import SecurityWatermark from './SecurityWatermark';

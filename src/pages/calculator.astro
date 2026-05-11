@@ -1,0 +1,23 @@
+---
+import Layout from '../layouts/Layout.astro';
+import CalculatorEngine from '../components/calculator/CalculatorEngine';
+---
+
+<Layout title="Calculadora de Comisiones | Tarquitet">
+  <main class="min-h-screen pt-32 pb-20 bg-[#050000]">
+    <div class="max-w-7xl mx-auto px-4">
+      
+      <header class="mb-12 border-b border-brand-red/20 pb-8">
+        <h1 class="text-white font-black text-5xl md:text-7xl uppercase italic tracking-tighter">
+          Configura tu <span class="text-brand-red">Obra</span>
+        </h1>
+        <p class="text-brand-light/40 font-mono text-sm uppercase tracking-[0.4em] mt-4">
+          Sistema de Presupuesto Automatizado // v2.0
+        </p>
+      </header>
+
+      <CalculatorEngine client:load />
+      
+    </div>
+  </main>
+</Layout>

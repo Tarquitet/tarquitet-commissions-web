@@ -9,6 +9,7 @@ import {
 } from '../data/sheets';
 import { getImagePath, preventActions, formatHumanTitle } from '../utils/formatters';
 import FadeImage from './FadeImage';
+import YCHSlider from './YCHSlider';
 
 export default function PricingSection() {
   const [artworks, setArtworks] = useState<ArtPiece[]>([]);
@@ -146,6 +147,17 @@ export default function PricingSection() {
             </div>
           );
         })}
+      </div>
+
+      {/* NUEVA UBICACIÓN DEL YCH */}
+      <div className="mt-8 mb-8">
+        <div className="flex items-center gap-4 mb-6 px-4 md:px-8">
+          <h3 className="text-white font-black text-3xl md:text-4xl uppercase italic tracking-tighter">
+            Poses / Y.C.H <span className="text-brand-red">Disponibles</span>
+          </h3>
+          <div className="h-[2px] flex-1 bg-gradient-to-r from-brand-red/50 to-transparent"></div>
+        </div>
+        <YCHSlider />
       </div>
 
       {/* SECCIÓN DE EXTRAS */}

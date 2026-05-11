@@ -1,36 +1,34 @@
-import React from 'react';
-
-export default function OptionPill({ label, value, isSelected, onClick }: any) {
+export const OptionPill = ({ label, value, isSelected, onClick, index }: any) => {
   const isFree = !value || value === '$0' || value === '0%' || value === '0';
 
   return (
     <button
       onClick={onClick}
-      className={`relative flex flex-col items-center justify-center p-4 sm:p-6 rounded-3xl aspect-[3/4] border transition-all duration-300 group overflow-hidden ${
+      className={`relative group flex items-center justify-between px-6 py-4 rounded-2xl border transition-all duration-300 w-full overflow-hidden ${
         isSelected
-          ? 'bg-gradient-to-b from-brand-red/20 to-[#0a0a0a] border-brand-red shadow-[0_0_30px_rgba(156,17,17,0.3)] scale-105 z-10'
-          : 'bg-gradient-to-b from-white/5 to-black/60 border-white/10 hover:border-brand-red/50 hover:-translate-y-2'
+          ? 'bg-brand-red border-brand-red text-white shadow-[0_0_20px_rgba(220,38,38,0.3)] scale-[1.02]'
+          : 'bg-white/5 border-white/10 text-white/60 hover:bg-white/10 hover:border-brand-red/30'
       }`}
     >
-      {/* Etiqueta Principal (Como los años 2026, 2025 del portafolio) */}
-      <span
-        className={`font-black uppercase text-2xl sm:text-3xl italic tracking-tighter text-center leading-none mb-6 transition-colors ${
-          isSelected ? 'text-white' : 'text-white/40 group-hover:text-white'
-        }`}
-      >
-        {label}
-      </span>
+      {/* Indicador visual de selección lateral */}
+      {isSelected && <div className="absolute left-0 top-0 h-full w-1 bg-white/40 shadow-[2px_0_10px_white]" />}
 
-      {/* Tag de Precio (Como el cuadro de "1 ENTRADAS") */}
-      <span
-        className={`font-mono text-[10px] font-black uppercase tracking-[0.2em] px-4 py-1.5 transition-colors ${
+      <div className="flex flex-col items-start">
+        <span className="text-[10px] font-mono uppercase tracking-[0.2em] opacity-40 mb-1">
+          Opción {index ? index + 1 : ''}
+        </span>
+        <span className="font-black uppercase text-xs md:text-sm tracking-widest italic leading-none">{label}</span>
+      </div>
+
+      <div
+        className={`px-4 py-2 rounded-xl font-mono text-[10px] font-black border transition-colors ${
           isSelected
-            ? 'bg-brand-red text-black'
-            : 'bg-black/50 border border-brand-red/30 text-brand-red group-hover:border-brand-red'
+            ? 'bg-black/20 border-white/20 text-white'
+            : 'bg-black/40 border-brand-red/20 text-brand-red group-hover:border-brand-red/50'
         }`}
       >
-        {isFree ? 'INCLUIDO' : value.toString().includes('%') ? `+${value}` : `+${value}`}
-      </span>
+        {isFree ? 'INCLUIDO' : value.toString().includes('%') ? `+${value}` : `+${value} USD`}
+      </div>
     </button>
   );
-}
+};
