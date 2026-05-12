@@ -116,12 +116,12 @@ export default function TOSSection() {
         <div className="mt-32 relative">
           <div className="absolute inset-0 flex items-center justify-center -top-10 overflow-hidden pointer-events-none">
             <span className="text-brand-red font-black text-7xl md:text-9xl uppercase italic tracking-tighter opacity-5 select-none whitespace-nowrap">
-              Términos de Servicio
+              Terms of Service
             </span>
           </div>
           <div className="relative z-10 flex flex-col items-center border-t-4 border-brand-red pt-12 pb-0">
             <div className="bg-brand-red text-black px-8 py-3 font-black text-sm tracking-[0.4em] uppercase shadow-[0_0_30px_rgba(220,38,38,0.3)]">
-              ULTIMA ACTUALIZACIÓN: {finalBlock.update_date || 'SIN FECHA'}
+              LATEST UPDATE: {finalBlock.update_date || 'SIN FECHA'}
             </div>
             <div
               className="text-brand-red/40 text-[10px] font-bold tracking-[0.5em] uppercase italic mt-6"

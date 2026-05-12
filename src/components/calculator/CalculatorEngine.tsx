@@ -245,7 +245,7 @@ export default function CalculatorEngine() {
                   rel="noopener noreferrer"
                   className="text-brand-red font-bold underline hover:text-white transition-colors"
                 >
-                  Términos de Servicio
+                  T.O.S
                 </a>
                 .
               </span>
