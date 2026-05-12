@@ -39,7 +39,7 @@ export default function GlobalModal({ isOpen, onClose, title, children }: Global
           onClick={onClose}
           className="mt-8 w-full bg-brand-red/10 border border-brand-red text-brand-red font-mono text-xs uppercase tracking-widest py-3 hover:bg-brand-red hover:text-black transition-all"
         >
-          Entendido
+          Understood
         </button>
       </div>
     </div>

@@ -5,10 +5,10 @@ export default function OptionCard({ label, value, isSelected, onClick, category
 
   // Mapeo simple de "iconos/imágenes" por categoría (puedes cambiarlos por rutas de imagen reales)
   const categoryImages: Record<string, string> = {
-    SHADOW: 'https://placehold.co/400x200/9c1111/white?text=SOMBRAS',
-    BG: 'https://placehold.co/400x200/222/white?text=FONDO',
-    PSD: 'https://placehold.co/400x200/444/white?text=CAPAS',
-    LICENSE: 'https://placehold.co/400x200/9c1111/white?text=DERECHOS',
+    SHADOW: 'https://placehold.co/400x200/9c1111/white?text=SHADOWS',
+    BG: 'https://placehold.co/400x200/222/white?text=BACKGROUND',
+    PSD: 'https://placehold.co/400x200/444/white?text=LAYERS',
+    LICENSE: 'https://placehold.co/400x200/9c1111/white?text=RIGHTS',
   };
 
   return (
@@ -43,7 +43,7 @@ export default function OptionCard({ label, value, isSelected, onClick, category
             isSelected ? 'bg-brand-red text-black' : 'bg-white/5 text-brand-red'
           }`}
         >
-          {isFree ? 'INCLUIDO' : value.toString().includes('%') ? `+${value}` : `+${value}`}
+          {isFree ? 'INCLUDED' : value.toString().includes('%') ? `+${value}` : `+${value}`}
         </span>
       </div>
     </button>

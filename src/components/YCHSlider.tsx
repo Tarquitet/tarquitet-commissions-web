@@ -19,7 +19,7 @@ export default function YCHSlider() {
   if (loading)
     return (
       <section className="py-20 flex justify-center animate-pulse text-brand-red/60 font-mono text-xs uppercase tracking-[0.5em]">
-        // Sincronizando Bases YCH_
+        // Syncing YCH Bases_
       </section>
     );
 

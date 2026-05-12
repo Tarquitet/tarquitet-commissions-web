@@ -18,7 +18,7 @@ export default memo(function Step1Base({ prices, baseSelection, setBaseSelection
           <thead>
             <tr>
               <th className="p-4 border-b border-white/10 text-white/40 font-black uppercase text-[10px] tracking-[0.2em]">
-                Corte \ Estilo
+                Cut \ Style
               </th>
               {tiers.map((finish) => (
                 <th

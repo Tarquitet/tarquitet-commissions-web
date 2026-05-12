@@ -37,7 +37,7 @@ export default function TOSSection() {
     return (
       <div className="flex justify-center items-center py-40 border border-brand-red/10 bg-[#050000] rounded-2xl">
         <p className="text-brand-red/60 font-mono text-xs uppercase tracking-[0.5em] animate-pulse">
-          // Accediendo a Protocolos Legales...
+          // Accessing Legal Protocols...
         </p>
       </div>
     );

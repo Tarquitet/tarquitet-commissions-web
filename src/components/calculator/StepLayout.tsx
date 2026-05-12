@@ -12,7 +12,7 @@ export default function StepLayout({ stepNumber, title, subtitle, children }: St
     <div className="space-y-6 animate-in fade-in slide-in-from-right-4">
       <div className="border-b border-white/10 pb-4">
         <h2 className="text-white font-black text-3xl uppercase italic tracking-tighter mb-1">
-          {stepNumber ? `Paso ${stepNumber}: ` : ''}
+          {stepNumber ? `Step ${stepNumber}: ` : ''}
           {title}
         </h2>
         <p className="text-white/40 font-bold text-xs uppercase tracking-widest">{subtitle}</p>

@@ -12,11 +12,11 @@ export default function PaymentMethods() {
   const handleOpenModal = (method: any) => {
     const finalMessage =
       method.message ||
-      `Para realizar tu pago a través de ${method.name}, por favor contáctame directamente por mis redes sociales o correo. Te proporcionaré los datos exactos de forma segura.`;
+      `To make your payment through ${method.name}, please contact me directly through my social networks or email. I will provide you with the exact details securely.`;
 
     setModalData({
       isOpen: true,
-      title: `Pago vía ${method.name}`,
+      title: `Payment via ${method.name}`,
       message: finalMessage,
     });
   };
@@ -33,7 +33,7 @@ export default function PaymentMethods() {
               <div className="w-16 h-16 bg-[#050000] border border-brand-red/20 rounded-xl flex items-center justify-center p-3 group-hover:border-brand-red group-hover:shadow-[0_0_15px_rgba(220,38,38,0.2)] transition-all duration-500">
                 <img
                   src={method.icon}
-                  alt={`Logo de ${method.name}`}
+                  alt={`Logo of ${method.name}`}
                   className="w-full h-full object-contain opacity-90 group-hover:opacity-100 transition-opacity duration-300"
                 />
               </div>

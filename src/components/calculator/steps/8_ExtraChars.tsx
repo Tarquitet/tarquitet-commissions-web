@@ -14,9 +14,9 @@ export default memo(function StepExtraChars({ extraChars, setExtraChars, charsCo
   return (
     <div className="bg-white/5 border border-white/10 rounded-3xl p-6 flex flex-col sm:flex-row justify-between items-center gap-6 shadow-inner">
       <div className="text-center sm:text-left">
-        <h4 className="text-white font-black text-xl uppercase italic tracking-tight">Personajes Extra</h4>
+        <h4 className="text-white font-black text-xl uppercase italic tracking-tight">Extra Characters</h4>
         <p className="text-brand-red font-mono text-[10px] uppercase tracking-widest mt-1">
-          +{displayValue} del valor base por personaje adicional
+          +{displayValue} of the base value per additional character
         </p>
       </div>
 

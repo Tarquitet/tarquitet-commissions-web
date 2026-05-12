@@ -15,7 +15,7 @@ export const paymentMethods: PaymentMethod[] = [
     url: '#',
     isLocal: true,
     message:
-      'Para realizar tu pago a través de Nequi, por favor contáctame directamente por mis redes sociales o correo. Te proporcionaré los datos exactos para la transferencia o depósito de forma segura.',
+      'To make your payment through Nequi, please contact me directly through my social networks or email. I will provide you with the exact details for the transfer or deposit securely.',
   },
   { name: 'PayPal', icon: '/paypal.png', url: 'https://www.paypal.me/tarquitetofficial', isLocal: false },
   { name: 'Ko-fi', icon: '/ko-fi.png', url: 'https://ko-fi.com/tarquitet', isLocal: false },
@@ -25,6 +25,6 @@ export const paymentMethods: PaymentMethod[] = [
     url: '#',
     isLocal: false,
     message:
-      'Acepto transferencias internacionales vía Global66. Contáctame por DM y te proporcionaré el correo y los datos exactos de mi cuenta para que realices el envío.',
+      'I accept international transfers via Global66. Contact me by DM and I will provide you with the email and exact details of my account so you can make the transfer.',
   },
 ];

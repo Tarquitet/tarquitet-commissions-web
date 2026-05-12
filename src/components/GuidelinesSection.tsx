@@ -13,14 +13,14 @@ export default function GuidelinesSection() {
         console.table(data); // Esto te mostrará en la consola si los datos llegan o no
 
         if (data.length === 0) {
-          setError("No se encontraron datos. Revisa el GID y los encabezados 'type' y 'content'.");
+          setError("No data found. Check the GID and the 'type' and 'content' headers.");
         }
 
         setItems(data);
         setLoading(false);
       })
       .catch((err) => {
-        setError('Error de conexión con Google Sheets.');
+        setError('Connection error with Google Sheets.');
         setLoading(false);
       });
   }, []);
@@ -34,7 +34,7 @@ export default function GuidelinesSection() {
     <div className="bg-[#050000] border border-brand-red/20 rounded-2xl p-8 relative overflow-hidden mb-12">
       <h4 className="text-white font-black text-xl uppercase italic mb-6 flex items-center gap-3">
         <span className="w-2 h-2 bg-brand-red"></span>
-        Parámetros de Contenido
+        Content Parameters
       </h4>
 
       {/* MESAJE DE ERROR (Solo aparece si falla) */}
@@ -47,7 +47,7 @@ export default function GuidelinesSection() {
       <div className="grid grid-cols-1 md:grid-cols-2 gap-10">
         <div>
           <h5 className="text-white font-bold text-xs uppercase tracking-widest mb-4 flex items-center gap-2 border-b border-white/10 pb-2">
-            <span className="text-green-500">+</span> Permitido
+            <span className="text-green-500">+</span> Allowed
           </h5>
           <ul className="space-y-3">
             {allowed.map((item, i) => (
@@ -60,7 +60,7 @@ export default function GuidelinesSection() {
 
         <div>
           <h5 className="text-white font-bold text-xs uppercase tracking-widest mb-4 flex items-center gap-2 border-b border-white/10 pb-2">
-            <span className="text-brand-red">-</span> Restringido
+            <span className="text-brand-red">-</span> Restricted
           </h5>
           <ul className="space-y-3">
             {restricted.map((item, i) => (

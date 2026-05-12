@@ -19,7 +19,7 @@ export const OptionPill = ({ label, value, isSelected, onClick }: any) => {
           isSelected ? 'bg-black/20 border-white/20 text-white' : 'bg-black/40 border-brand-red/20 text-brand-red'
         }`}
       >
-        {isFree ? 'INCLUIDO' : value.toString().includes('%') ? `+${value}` : `+${value} USD`}
+        {isFree ? 'INCLUDED' : value.toString().includes('%') ? `+${value}` : `+${value} USD`}
       </div>
     </button>
   );

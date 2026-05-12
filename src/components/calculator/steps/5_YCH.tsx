@@ -8,7 +8,7 @@ export default function Step5YCH({ ychData, ychSelection, setYchSelection }: any
         className={`min-w-[200px] h-48 rounded-2xl border flex flex-col items-center justify-center snap-start transition-all ${!ychSelection ? 'bg-brand-red border-brand-red text-black shadow-[0_0_20px_rgba(220,38,38,0.4)]' : 'bg-white/5 border-white/10 text-white/40 hover:border-white/30'}`}
       >
         <span className="font-black uppercase italic tracking-tighter text-lg">Custom Pose</span>
-        <span className="text-[10px] uppercase font-bold opacity-60">Tu propia referencia</span>
+        <span className="text-[10px] uppercase font-bold opacity-60">Your own reference</span>
       </button>
 
       {ychData?.map((ych: any) => (

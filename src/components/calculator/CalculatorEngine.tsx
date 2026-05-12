@@ -22,14 +22,14 @@ import Step6PSD from './steps/6_PSD';
 import Step7Licenses from './steps/7_Licenses';
 
 const FORM_SECTIONS = [
-  { id: 'base', title: 'Base de la Comisión' },
-  { id: 'chars', title: 'Personajes' },
-  { id: 'ych', title: 'Poses y Estructura' },
-  { id: 'shadows', title: 'Fase de Sombras' },
-  { id: 'lights', title: 'Iluminación' },
-  { id: 'bg', title: 'Entorno / Fondo' },
-  { id: 'psd', title: 'Entregables PSD' },
-  { id: 'license', title: 'Licencias' },
+  { id: 'base', title: 'Commission Base' },
+  { id: 'chars', title: 'Characters' },
+  { id: 'ych', title: 'Poses and Structure' },
+  { id: 'shadows', title: 'Shadow Phase' },
+  { id: 'lights', title: 'Lighting' },
+  { id: 'bg', title: 'Environment / Background' },
+  { id: 'psd', title: 'PSD Deliverables' },
+  { id: 'license', title: 'Licenses' },
 ];
 
 export default function CalculatorEngine() {
@@ -53,13 +53,13 @@ export default function CalculatorEngine() {
 
   const generatedText = useMemo(() => {
     const { baseSelection, extraChars, ychSelection, selections, multiSelections, total, paymentMethod } = logic;
-    if (!baseSelection) return 'Selecciona un Estilo Base para generar el resumen...';
+    if (!baseSelection) return 'Select a Base Style to generate the summary...';
 
-    let text = `🎨 SOLICITUD DE COMISIÓN - TARQUINET\n`;
+    let text = `🎨 COMMISSION REQUEST - TARQUINET\n`;
     text += `━━━━━━━━━━━━━━━━━━━━━━━━━━━━\n`;
-    text += `✨ ESTILO: ${baseSelection.tier}\n`;
-    if (extraChars > 1) text += `👥 PERSONAJES: ${extraChars}\n`;
-    if (ychSelection) text += `🖼️ BASE YCH: ${ychSelection.title}\n`;
+    text += `✨ STYLE: ${baseSelection.tier}\n`;
+    if (extraChars > 1) text += `👥 CHARACTERS: ${extraChars}\n`;
+    if (ychSelection) text += `🖼️ YCH BASE: ${ychSelection.title}\n`;
 
     Object.entries(selections).forEach(([cat, val]) => {
       if (logic.isFullcolor && (cat === 'SHADOW' || cat === 'LIGHT')) return;
@@ -71,10 +71,10 @@ export default function CalculatorEngine() {
     });
 
     text += `━━━━━━━━━━━━━━━━━━━━━━━━━━━━\n`;
-    text += `💰 MÉTODO: ${paymentMethod}\n`;
+    text += `💰 METHOD: ${paymentMethod}\n`;
     text += `💵 TOTAL: $${total.gross} USD\n`;
     text += `━━━━━━━━━━━━━━━━━━━━━━━━━━━━\n`;
-    text += `🔗 Referencias: [Adjunta tu link aquí]`;
+    text += `🔗 References: [Attach your link here]`;
     return text;
   }, [logic]);
 
@@ -87,9 +87,9 @@ export default function CalculatorEngine() {
   if (isLoading) {
     return (
       <div className="py-32 flex flex-col items-center justify-center text-brand-red font-mono animate-pulse">
-        <div className="text-2xl font-black uppercase tracking-[0.5em] mb-4 text-white">INICIANDO_SISTEMA</div>
+        <div className="text-2xl font-black uppercase tracking-[0.5em] mb-4 text-white">STARTING_SYSTEM</div>
         <div className="text-xs text-brand-red/50 text-center uppercase tracking-widest font-bold">
-          Sincronizando base de datos...
+          Synchronizing database...
         </div>
       </div>
     );
@@ -193,13 +193,13 @@ export default function CalculatorEngine() {
           <div className="flex items-center gap-4 mb-8">
             <span className="text-brand-red text-2xl font-black italic">!</span>
             <h2 className="text-white font-black text-3xl uppercase italic tracking-tighter leading-none">
-              Cierre de Solicitud
+              Request Closure
             </h2>
           </div>
 
           <div className="mb-10">
             <h4 className="text-white/40 font-mono text-[10px] uppercase tracking-widest mb-4 text-white/60">
-              Método de pago preferido:
+              Preferred payment method:
             </h4>
             <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
               {['PayPal', 'Nequi', 'Kofi', 'Global66'].map((method) => (
@@ -220,7 +220,7 @@ export default function CalculatorEngine() {
 
           <div className="mb-8">
             <h4 className="text-white/40 font-mono text-[10px] uppercase tracking-widest mb-4 text-white/60">
-              Resumen para copiar:
+              Summary to copy:
             </h4>
             <textarea
               readOnly
@@ -238,7 +238,7 @@ export default function CalculatorEngine() {
                 className="w-6 h-6 accent-brand-red bg-black border-white/20 rounded cursor-pointer"
               />
               <span className="text-white/60 text-xs md:text-sm group-hover:text-white transition-colors font-mono leading-snug">
-                He revisado el resumen y acepto los{' '}
+                I have reviewed the summary and accept the{' '}
                 <a
                   href="/#tos"
                   target="_blank"
@@ -268,7 +268,7 @@ export default function CalculatorEngine() {
             >
               <path d="M8 5H6a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2v-1M8 5a2 2 0 012-2h2a2 2 0 012 2m0 0h2a2 2 0 012 2v3m2 4H10m0 0l3-3m-3 3l3 3" />
             </svg>
-            Copiar Datos para Contacto Directo
+            Copy Data for Direct Contact
           </button>
         </section>
       </div>
@@ -278,7 +278,7 @@ export default function CalculatorEngine() {
         <div className="bg-[#0a0000] border border-brand-red/40 rounded-4xl p-6 sm:p-8 shadow-[0_0_50px_rgba(220,38,38,0.15)] flex flex-col">
           <div className="flex items-center justify-between border-b border-white/10 pb-4 mb-6">
             <h3 className="text-white font-black text-2xl uppercase italic tracking-tighter">
-              Ticket <span className="text-brand-red">Resumen</span>
+              Ticket <span className="text-brand-red">Summary</span>
             </h3>
             <span className="text-[10px] font-mono text-white/20">#CALC_2026</span>
           </div>
@@ -286,8 +286,8 @@ export default function CalculatorEngine() {
           <div className="space-y-4 flex-1 mb-8 max-h-[40vh] overflow-y-auto no-scrollbar pr-1">
             <div className="flex justify-between items-start">
               <div className="flex flex-col max-w-[70%] text-white italic font-bold uppercase">
-                <span className="truncate">{logic.baseSelection ? logic.baseSelection.tier : 'Sin Selección'}</span>
-                <span className="text-[9px] font-mono opacity-40 uppercase tracking-widest">Base Proyecto</span>
+                <span className="truncate">{logic.baseSelection ? logic.baseSelection.tier : 'No Selection'}</span>
+                <span className="text-[9px] font-mono opacity-40 uppercase tracking-widest">Project Base</span>
               </div>
               <span className="font-mono font-bold text-brand-light text-sm">${logic.total.base}</span>
             </div>
@@ -337,7 +337,7 @@ export default function CalculatorEngine() {
             {logic.extraChars > 1 && (
               <div className="flex justify-between items-center py-2 border-t border-brand-red/20 bg-brand-red/5 px-2 rounded-lg mt-2">
                 <span className="text-[10px] font-black uppercase text-brand-red italic">
-                  Mult. Personajes ({logic.extraChars})
+                  Character Multiplier ({logic.extraChars})
                 </span>
                 <span className="font-mono font-bold text-xs text-brand-red">
                   x{' '}
@@ -353,10 +353,10 @@ export default function CalculatorEngine() {
 
           <div className="border-t-4 border-brand-red pt-6 mb-8 bg-linear-to-b from-brand-red/5 to-transparent p-4 rounded-b-xl">
             <div className="flex justify-between items-center mb-4 opacity-30 font-mono text-[10px] uppercase text-white">
-              <span>Tarifas (PayPal)</span>
+              <span>Fees (PayPal)</span>
               <span>${logic.total.fees}</span>
             </div>
-            <p className="text-white/40 font-black text-[10px] uppercase tracking-[0.3em] mb-1">Total Estimado</p>
+            <p className="text-white/40 font-black text-[10px] uppercase tracking-[0.3em] mb-1">Estimated Total</p>
             <div className="flex items-baseline gap-2">
               <span className="text-brand-red font-black text-5xl md:text-6xl italic tracking-tighter leading-none">
                 ${logic.total.gross}
@@ -378,7 +378,7 @@ export default function CalculatorEngine() {
                 : 'bg-[#9c1111] hover:bg-brand-red text-white border border-brand-red hover:shadow-[0_0_30px_rgba(220,38,38,0.4)] active:scale-95'
             }`}
           >
-            {!logic.isConfirmed && logic.baseSelection ? 'Falta Confirmación' : 'Enviar Solicitud'}
+            {!logic.isConfirmed && logic.baseSelection ? 'Missing Confirmation' : 'Send Request'}
             <svg
               width="24"
               height="24"
@@ -395,14 +395,14 @@ export default function CalculatorEngine() {
       </aside>
 
       {/* MODAL DE CONFIRMACIÓN DE COPIADO */}
-      <GlobalModal isOpen={isCopyModalOpen} onClose={() => setIsCopyModalOpen(false)} title="Protocolo de Copiado">
+      <GlobalModal isOpen={isCopyModalOpen} onClose={() => setIsCopyModalOpen(false)} title="Copy Protocol">
         <div className="text-center py-6">
           <div className="w-16 h-16 bg-brand-red/20 rounded-full flex items-center justify-center mx-auto mb-4 border border-brand-red/40">
             <span className="text-brand-red text-2xl">✓</span>
           </div>
-          <p className="text-white font-black text-xl mb-2 italic uppercase">¡Datos Copiados!</p>
+          <p className="text-white font-black text-xl mb-2 italic uppercase">Data Copied!</p>
           <p className="text-white/40 text-sm font-mono italic">
-            El resumen está en tu portapapeles. Ya puedes pegarlo donde prefieras.
+            The summary is in your clipboard. You can paste it wherever you prefer.
           </p>
           <button
             onClick={() => setIsCopyModalOpen(false)}

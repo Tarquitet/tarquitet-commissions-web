@@ -8,7 +8,7 @@ export default function SecurityWatermark() {
             key={i}
             className="text-white font-black text-3xl md:text-5xl uppercase tracking-[0.4em] whitespace-nowrap drop-shadow-lg"
           >
-            PREVIEW ONLY // NO ROBAR // PREVIEW ONLY // NO ROBAR // PREVIEW ONLY
+            PREVIEW ONLY // DO NOT STEAL // PREVIEW ONLY // DO NOT STEAL // PREVIEW ONLY
           </span>
         ))}
       </div>

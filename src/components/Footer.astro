@@ -19,7 +19,7 @@ import type { SocialNetwork } from '../data/socials';
       </div>
 
       <div class="flex flex-col items-center gap-3">
-        <span class="text-[10px] font-black text-brand-red uppercase tracking-[0.2em]">Redes</span>
+        <span class="text-[10px] font-black text-brand-red uppercase tracking-[0.2em]">Networks</span>
         <div class="flex gap-6 items-center">
           {artisticNetworks.map((network: SocialNetwork) => (
             <a 
@@ -45,7 +45,7 @@ import type { SocialNetwork } from '../data/socials';
       </div>
 
       <div class="flex flex-col md:items-end items-center gap-2">
-        <span class="text-[10px] font-black text-brand-red uppercase tracking-[0.2em]">Correo</span>
+        <span class="text-[10px] font-black text-brand-red uppercase tracking-[0.2em]">Email</span>
         <div class="flex items-center gap-2 group cursor-pointer copy-trigger" data-copy="contacto@tarquitet.com">
           <span class="text-white group-hover:text-brand-red transition-colors text-xl font-black italic uppercase copy-text">
             contact@tarquitet.com
@@ -62,14 +62,14 @@ import type { SocialNetwork } from '../data/socials';
         TARQUITET &copy; <span id="current-year" class="text-brand-red"></span>
       </div>
       <a href="https://tarquitet.com" target="_blank" class="text-white/40 hover:text-white font-mono text-[9px] uppercase tracking-[0.3em] transition-colors">
-        Portafolio Profesional
+        Professional Portfolio
       </a>
     </div>
     
   </div>
 
   <div id="copy-toast" class="fixed bottom-8 left-1/2 -translate-x-1/2 bg-white text-black px-8 py-3 rounded-lg font-black text-xs tracking-[0.2em] uppercase opacity-0 pointer-events-none transition-all duration-300 z-50 shadow-[0_0_30px_rgba(255,255,255,0.2)]">
-    ¡Copiado!
+    Copied!
   </div>
 </footer>
 
@@ -96,7 +96,7 @@ import type { SocialNetwork } from '../data/socials';
       try {
         await navigator.clipboard.writeText(textToCopy);
         
-        textSpan.innerText = '¡COPIADO!';
+        textSpan.innerText = 'COPIED!';
         textSpan.classList.add('text-green-500');
 
         if (toast) {

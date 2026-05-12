@@ -10,7 +10,7 @@ export default function PortfolioGallery() {
   const [artworks, setArtworks] = useState<ArtPiece[]>([]);
   const [loading, setLoading] = useState(true);
   const [activeYear, setActiveYear] = useState<string | null>(null);
-  const [activeFilter, setActiveFilter] = useState<string>('Todos');
+  const [activeFilter, setActiveFilter] = useState<string>('All');
   const [selectedArt, setSelectedArt] = useState<ArtPiece | null>(null);
 
   const yearsSliderRef = useRef<HTMLDivElement>(null);
@@ -44,14 +44,14 @@ export default function PortfolioGallery() {
 
   const filteredArtworks = useMemo(() => {
     const current = activeYear ? groupedByYear[activeYear] : [];
-    if (activeFilter === 'Todos') return current;
+    if (activeFilter === 'All') return current;
     return current.filter((art) => art.category === activeFilter);
   }, [activeFilter, activeYear, groupedByYear]);
 
   const categories = useMemo(() => {
     if (!activeYear) return [];
     const cats = new Set(groupedByYear[activeYear].map((a) => a.category));
-    return ['Todos', ...Array.from(cats)];
+    return ['All', ...Array.from(cats)];
   }, [activeYear, groupedByYear]);
 
   const scrollSlider = (direction: 'left' | 'right', ref: React.RefObject<HTMLDivElement | null>) => {
@@ -94,7 +94,7 @@ export default function PortfolioGallery() {
                   cover={yearCovers[year]}
                   onClick={() => {
                     setActiveYear(year);
-                    setActiveFilter('Todos');
+                    setActiveFilter('All');
                     window.scrollTo({ top: document.getElementById('portfolio')?.offsetTop || 0, behavior: 'smooth' });
                   }}
                 />

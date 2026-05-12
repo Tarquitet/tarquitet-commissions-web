@@ -63,7 +63,7 @@ export default function PricingSection() {
     return (
       <div className="flex justify-center items-center h-64 border border-brand-red/10 bg-[#050000] rounded-2xl">
         <p className="text-brand-red/60 font-mono text-xs uppercase tracking-[0.5em] animate-pulse">
-          // Sincronizando_Base_Financiera
+          // Syncing Financial Base
         </p>
       </div>
     );
@@ -91,13 +91,13 @@ export default function PricingSection() {
                 {tierExamples[tierName] ? (
                   <FadeImage
                     src={getImagePath(tierExamples[tierName])}
-                    alt={`Ejemplo ${tierName}`}
+                    alt={`Example ${tierName}`}
                     className="w-full h-full object-cover opacity-50 group-hover:opacity-100 group-hover:scale-110 transition-all duration-1000 ease-in-out"
                     containerClass="w-full h-full"
                   />
                 ) : (
                   <div className="absolute inset-0 flex items-center justify-center text-brand-light/10 font-mono text-[10px] uppercase">
-                    [Sin previsualización]
+                    [No preview]
                   </div>
                 )}
                 <div className="absolute inset-0 bg-linear-to-t from-[#080000] via-transparent to-transparent z-10"></div>
@@ -137,7 +137,7 @@ export default function PricingSection() {
                 <div className="bg-brand-red/5 p-5 rounded-xl border border-brand-red/10 backdrop-blur-sm">
                   {/* CORRECCIÓN: Color más vivo y brillante en el título */}
                   <p className="text-brand-red font-black text-[10px] uppercase tracking-[0.3em] mb-4">
-                    Especificaciones_Base
+                    Base Specifications
                   </p>
                   <ul className="grid grid-cols-1 gap-3">
                     {features.map((feature, i) => (
@@ -162,7 +162,7 @@ export default function PricingSection() {
         <div className="mt-8 mb-8">
           <div className="flex items-center gap-4 mb-6 px-4 md:px-8">
             <h3 className="text-white font-black text-3xl md:text-4xl uppercase italic tracking-tighter">
-              Poses / Y.C.H <span className="text-brand-red">Disponibles</span>
+              Poses / Y.C.H <span className="text-brand-red">Available</span>
             </h3>
             <div className="h-[2px] flex-1 bg-gradient-to-r from-brand-red/50 to-transparent"></div>
           </div>
@@ -176,7 +176,7 @@ export default function PricingSection() {
 
         <h5 className="text-brand-red font-black text-xs uppercase tracking-[0.5em] mb-10 flex items-center gap-6">
           <span className="h-px bg-brand-red/20 flex-grow"></span>
-          Cargos Adicionales
+          Additional Charges
           <span className="h-px bg-brand-red/20 flex-grow"></span>
         </h5>
 
