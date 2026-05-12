@@ -38,7 +38,6 @@ export default function CalculatorEngine() {
   const [ychData, setYchData] = useState<YCHPiece[]>([]);
   const [isLoading, setIsLoading] = useState(true);
 
-  // Solo mantenemos el modal para el aviso de copiado
   const [isCopyModalOpen, setIsCopyModalOpen] = useState(false);
 
   useEffect(() => {
@@ -96,17 +95,21 @@ export default function CalculatorEngine() {
     );
   }
 
+  // AQUÍ ESTÁ LA MAGIA: Filtramos las secciones. Si ychData está vacío, ocultamos la sección YCH.
+  // De esta forma la numeración de los pasos (01, 02, 03...) no se rompe.
+  const activeSections = FORM_SECTIONS.filter((section) => section.id !== 'ych' || ychData.length > 0);
+
   return (
     <div className="flex flex-col lg:flex-row gap-10 items-start relative pb-32">
       {/* SECCIÓN IZQUIERDA: FORMULARIO */}
       <div className="w-full lg:w-[70%] flex flex-col gap-24">
-        {FORM_SECTIONS.map((section, idx) => {
+        {activeSections.map((section, idx) => {
           const stepNum = idx + 1;
           return (
             <section key={section.id} id={section.id} className="scroll-mt-32">
               <div className="mb-10 group">
                 <div className="flex items-center gap-4">
-                  <span className="bg-brand-red text-black font-black italic px-3 py-1 rounded-sm text-sm">
+                  <span className="bg-brand-red text-black font-black italic px-3 py-1 rounded-sm text-sm shadow-[0_0_15px_rgba(220,38,38,0.3)]">
                     {stepNum.toString().padStart(2, '0')}
                   </span>
                   <h2 className="text-white font-black text-4xl uppercase italic tracking-tighter group-hover:text-brand-red transition-colors">
@@ -195,7 +198,7 @@ export default function CalculatorEngine() {
           </div>
 
           <div className="mb-10">
-            <h4 className="text-white/40 font-mono text-[10px] uppercase tracking-widest mb-4">
+            <h4 className="text-white/40 font-mono text-[10px] uppercase tracking-widest mb-4 text-white/60">
               Método de pago preferido:
             </h4>
             <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
@@ -216,11 +219,13 @@ export default function CalculatorEngine() {
           </div>
 
           <div className="mb-8">
-            <h4 className="text-white/40 font-mono text-[10px] uppercase tracking-widest mb-4">Resumen para copiar:</h4>
+            <h4 className="text-white/40 font-mono text-[10px] uppercase tracking-widest mb-4 text-white/60">
+              Resumen para copiar:
+            </h4>
             <textarea
               readOnly
               value={generatedText}
-              className="w-full h-48 bg-black/40 border border-white/10 rounded-2xl p-6 font-mono text-[11px] text-brand-light/40 resize-none focus:outline-none"
+              className="w-full h-48 bg-black/40 border border-white/10 rounded-2xl p-6 font-mono text-[11px] text-brand-light/40 resize-none focus:outline-none scrollbar-thin scrollbar-thumb-brand-red/20"
             />
           </div>
 
@@ -261,7 +266,7 @@ export default function CalculatorEngine() {
               viewBox="0 0 24 24"
               className="group-hover:rotate-12 transition-transform"
             >
-              <path d="M8 5H6a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2v-1M8 5a2 2 0 002 2h2a2 2 0 002-2M8 5a2 2 0 012-2h2a2 2 0 012 2m0 0h2a2 2 0 012 2v3m2 4H10m0 0l3-3m-3 3l3 3" />
+              <path d="M8 5H6a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2v-1M8 5a2 2 0 012-2h2a2 2 0 012 2m0 0h2a2 2 0 012 2v3m2 4H10m0 0l3-3m-3 3l3 3" />
             </svg>
             Copiar Datos para Contacto Directo
           </button>
@@ -287,7 +292,13 @@ export default function CalculatorEngine() {
               <span className="font-mono font-bold text-brand-light text-sm">${logic.total.base}</span>
             </div>
 
-            {/* ... Desglose Dinámico de Extras ... */}
+            {logic.ychSelection && (
+              <div className="flex justify-between items-center py-2 border-t border-white/5">
+                <span className="text-[10px] font-bold uppercase text-white/50 italic">Base YCH</span>
+                <span className="font-mono font-bold text-xs text-white">+{logic.ychSelection.price}</span>
+              </div>
+            )}
+
             {Object.entries(logic.selections).map(([cat, val]) => {
               if (logic.isFullcolor && (cat === 'SHADOW' || cat === 'LIGHT')) return null;
               const opt = logic.groupedOptions[cat]?.find((o) => o.label === val);
@@ -304,6 +315,40 @@ export default function CalculatorEngine() {
                 </div>
               );
             })}
+
+            {Object.entries(logic.multiSelections).map(([cat, labels]) =>
+              labels.map((label) => {
+                const opt = logic.groupedOptions[cat]?.find((o) => o.label === label);
+                if (!opt || opt.value === '$0' || opt.value === '0%') return null;
+                return (
+                  <div
+                    key={label}
+                    className="flex justify-between text-white/50 font-mono uppercase text-[9px] border-t border-white/5 pt-2"
+                  >
+                    <span>
+                      {cat}: {label}
+                    </span>
+                    <span>+{opt.value}</span>
+                  </div>
+                );
+              }),
+            )}
+
+            {logic.extraChars > 1 && (
+              <div className="flex justify-between items-center py-2 border-t border-brand-red/20 bg-brand-red/5 px-2 rounded-lg mt-2">
+                <span className="text-[10px] font-black uppercase text-brand-red italic">
+                  Mult. Personajes ({logic.extraChars})
+                </span>
+                <span className="font-mono font-bold text-xs text-brand-red">
+                  x{' '}
+                  {1 +
+                    (logic.groupedOptions['CHARACTERS']?.[0]
+                      ? parseFloat(logic.groupedOptions['CHARACTERS'][0].value) / 100
+                      : 0.75) *
+                      (logic.extraChars - 1)}
+                </span>
+              </div>
+            )}
           </div>
 
           <div className="border-t-4 border-brand-red pt-6 mb-8 bg-linear-to-b from-brand-red/5 to-transparent p-4 rounded-b-xl">
@@ -334,6 +379,17 @@ export default function CalculatorEngine() {
             }`}
           >
             {!logic.isConfirmed && logic.baseSelection ? 'Falta Confirmación' : 'Enviar Solicitud'}
+            <svg
+              width="24"
+              height="24"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              strokeWidth="3"
+              className={!logic.baseSelection || !logic.isConfirmed ? 'opacity-10' : 'animate-bounce-x'}
+            >
+              <path d="M5 12h14M12 5l7 7-7 7" />
+            </svg>
           </a>
         </div>
       </aside>
@@ -341,6 +397,9 @@ export default function CalculatorEngine() {
       {/* MODAL DE CONFIRMACIÓN DE COPIADO */}
       <GlobalModal isOpen={isCopyModalOpen} onClose={() => setIsCopyModalOpen(false)} title="Protocolo de Copiado">
         <div className="text-center py-6">
+          <div className="w-16 h-16 bg-brand-red/20 rounded-full flex items-center justify-center mx-auto mb-4 border border-brand-red/40">
+            <span className="text-brand-red text-2xl">✓</span>
+          </div>
           <p className="text-white font-black text-xl mb-2 italic uppercase">¡Datos Copiados!</p>
           <p className="text-white/40 text-sm font-mono italic">
             El resumen está en tu portapapeles. Ya puedes pegarlo donde prefieras.

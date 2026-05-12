@@ -3,11 +3,13 @@ import {
   getSheetArtworks,
   getSheetPrices,
   getSheetExtras,
+  getSheetYCH, // <-- Añadido
   type ArtPiece,
   type PricingTier,
   type ExtraItem,
+  type YCHPiece, // <-- Añadido
 } from '../data/sheets';
-import { getImagePath, preventActions, formatHumanTitle } from '../utils/formatters';
+import { getImagePath } from '../utils/formatters';
 import FadeImage from './FadeImage';
 import YCHSlider from './YCHSlider';
 
@@ -15,18 +17,21 @@ export default function PricingSection() {
   const [artworks, setArtworks] = useState<ArtPiece[]>([]);
   const [prices, setPrices] = useState<PricingTier[]>([]);
   const [extras, setExtras] = useState<ExtraItem[]>([]);
+  const [ychData, setYchData] = useState<YCHPiece[]>([]); // <-- Nuevo estado
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     async function loadData() {
-      const [artData, priceData, extrasData] = await Promise.all([
+      const [artData, priceData, extrasData, ych] = await Promise.all([
         getSheetArtworks(),
         getSheetPrices(),
         getSheetExtras(),
+        getSheetYCH(), // <-- Obtenemos los YCHs aquí también
       ]);
       setArtworks(artData);
       setPrices(priceData);
       setExtras(extrasData);
+      setYchData(ych);
       setLoading(false);
     }
     loadData();
@@ -42,7 +47,6 @@ export default function PricingSection() {
     return groups;
   }, [prices]);
 
-  // RESTAURADO: Selección aleatoria real que solo cambia al recargar la página
   const tierExamples = useMemo(() => {
     const examples: Record<string, string> = {};
     Object.keys(groupedPrices).forEach((tierName) => {
@@ -70,20 +74,24 @@ export default function PricingSection() {
       {/* GRILLA DE CATEGORÍAS (TIERS) */}
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
         {Object.entries(groupedPrices).map(([tierName, tierItems], index) => {
-          const features = tierItems[0]?.features.split(';') || [];
+          // CORRECCIÓN: Ahora separa por guiones (-) o punto y coma (;) y borra espacios en blanco
+          const rawFeatures = tierItems[0]?.features || '';
+          const features = rawFeatures
+            .split(/(?:;|-)/)
+            .map((f) => f.trim())
+            .filter(Boolean);
 
           return (
             <div
               key={index}
               className="group bg-[#080000] border border-brand-red/10 rounded-2xl overflow-hidden flex flex-col transition-[border-color,box-shadow] duration-700 ease-in-out hover:border-brand-red/40 hover:shadow-[0_0_40px_rgba(220,38,38,0.15)]"
             >
-              {/* CABECERA CON REVELADO SUAVE */}
+              {/* CABECERA */}
               <div className="aspect-video bg-[#050000] relative overflow-hidden">
                 {tierExamples[tierName] ? (
                   <FadeImage
                     src={getImagePath(tierExamples[tierName])}
                     alt={`Ejemplo ${tierName}`}
-                    // Ajustamos el zoom para que sea más lento y sutil (duration-1000)
                     className="w-full h-full object-cover opacity-50 group-hover:opacity-100 group-hover:scale-110 transition-all duration-1000 ease-in-out"
                     containerClass="w-full h-full"
                   />
@@ -92,14 +100,13 @@ export default function PricingSection() {
                     [Sin previsualización]
                   </div>
                 )}
-
                 <div className="absolute inset-0 bg-linear-to-t from-[#080000] via-transparent to-transparent z-10"></div>
-
                 <h4 className="absolute bottom-4 left-6 text-white font-black text-3xl uppercase italic tracking-tighter drop-shadow-2xl z-20">
                   {tierName}
                 </h4>
               </div>
 
+              {/* CONTENIDO DE PRECIOS */}
               <div className="p-6 flex flex-col flex-grow">
                 <div className="space-y-4 mb-8 flex-grow">
                   {tierItems.map((item, i) => (
@@ -110,7 +117,6 @@ export default function PricingSection() {
                       <span className="text-brand-light/60 uppercase tracking-widest text-[10px] font-bold group-hover/row:text-white transition-colors duration-500">
                         {item.description}
                       </span>
-
                       <div className="flex items-center gap-3">
                         {item.original_price && (
                           <div className="relative">
@@ -127,8 +133,10 @@ export default function PricingSection() {
                   ))}
                 </div>
 
+                {/* ESPECIFICACIONES BASE */}
                 <div className="bg-brand-red/5 p-5 rounded-xl border border-brand-red/10 backdrop-blur-sm">
-                  <p className="text-brand-red/60 font-mono text-[8px] uppercase tracking-[0.3em] mb-4">
+                  {/* CORRECCIÓN: Color más vivo y brillante en el título */}
+                  <p className="text-brand-red font-black text-[10px] uppercase tracking-[0.3em] mb-4">
                     Especificaciones_Base
                   </p>
                   <ul className="grid grid-cols-1 gap-3">
@@ -138,7 +146,7 @@ export default function PricingSection() {
                         className="flex items-start gap-3 text-[10px] font-bold text-brand-light/70 uppercase tracking-widest leading-tight"
                       >
                         <span className="mt-1 w-1 h-1 bg-brand-red shrink-0 shadow-[0_0_5px_rgba(220,38,38,1)]"></span>
-                        {feature.trim()}
+                        {feature}
                       </li>
                     ))}
                   </ul>
@@ -149,16 +157,18 @@ export default function PricingSection() {
         })}
       </div>
 
-      {/* NUEVA UBICACIÓN DEL YCH */}
-      <div className="mt-8 mb-8">
-        <div className="flex items-center gap-4 mb-6 px-4 md:px-8">
-          <h3 className="text-white font-black text-3xl md:text-4xl uppercase italic tracking-tighter">
-            Poses / Y.C.H <span className="text-brand-red">Disponibles</span>
-          </h3>
-          <div className="h-[2px] flex-1 bg-gradient-to-r from-brand-red/50 to-transparent"></div>
+      {/* CONDICIONAL: SOLO SE MUESTRA SI HAY YCHs DISPONIBLES */}
+      {ychData.length > 0 && (
+        <div className="mt-8 mb-8">
+          <div className="flex items-center gap-4 mb-6 px-4 md:px-8">
+            <h3 className="text-white font-black text-3xl md:text-4xl uppercase italic tracking-tighter">
+              Poses / Y.C.H <span className="text-brand-red">Disponibles</span>
+            </h3>
+            <div className="h-[2px] flex-1 bg-gradient-to-r from-brand-red/50 to-transparent"></div>
+          </div>
+          <YCHSlider />
         </div>
-        <YCHSlider />
-      </div>
+      )}
 
       {/* SECCIÓN DE EXTRAS */}
       <div className="mt-12 p-10 bg-[#050000] border border-brand-red/20 rounded-2xl relative overflow-hidden">
