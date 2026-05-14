@@ -44,7 +44,9 @@ import HeroPipeline from '../components/HeroPipeline.tsx';
       
       {/* Aquí inyectamos el nuevo componente React */}
       <div class="relative z-10 w-full max-w-md lg:max-w-lg">
-         <HeroPipeline client:load />
+         <div class="hidden md:block">
+            <HeroPipeline client:load/>
+          </div>
       </div>
     </div>
 

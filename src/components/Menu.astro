@@ -1,10 +1,78 @@
 ---
 // src/components/Menu.astro
+
+// El link del formulario viene de tu configuración en sheets.ts
+const GOOGLE_FORM_URL = 'https://forms.gle/QLrFdUaHsva3t8Dg8';
+
+const navData = [
+  {
+    label: "Work",
+    links: [
+      { name: "Portfolio", href: "/#portfolio" },
+      { name: "About Me", href: "/#about" },
+    ],
+  },
+  {
+    label: "Prices",
+    links: [
+      { name: "Pricing", href: "/#pricing" },
+      { name: "Calculator", href: "/calculator" },
+    ],
+  },
+  {
+    label: "Legal",
+    links: [
+      { name: "Rules", href: "/#rules" },
+      { name: "T.O.S.", href: "/#tos" },
+    ],
+  },
+  {
+    label: "Contact",
+    links: [
+      { name: "Google Form", href: GOOGLE_FORM_URL },
+      { name: "Discord Server", href: "https://discord.com/invite/REMWQJRpnH" },
+      { name: "Professional Web", href: "https://tarquitet.com" },
+    ],
+  },
+];
 ---
-<a href="/#about" class="text-xs font-bold text-brand-light/60 hover:text-brand-red transition-all tracking-widest uppercase">Home</a>
-<a href="/#rules" class="text-xs font-bold text-brand-light/60 hover:text-brand-red transition-all tracking-widest uppercase">Rules</a>
-<a href="/#portfolio" class="text-xs font-bold text-brand-light/60 hover:text-brand-red transition-all tracking-widest uppercase">Portfolio</a>
-<a href="/#pricing" class="text-xs font-bold text-brand-light/60 hover:text-brand-red transition-all tracking-widest uppercase">Pricing</a>
-<a href="/#calculator" class="text-xs font-bold text-brand-light/60 hover:text-brand-red transition-all tracking-widest uppercase">Calculator</a>
-<a href="/#tos" class="text-xs font-bold text-brand-light/60 hover:text-brand-red transition-all tracking-widest uppercase">TOS</a>
-<a href="/#contact" class="text-xs font-bold text-brand-light/60 hover:text-brand-red transition-all tracking-widest uppercase">Contact</a>
+
+{navData.map((item) => (
+  <div class="relative group flex flex-col md:flex-row items-center h-full">
+    {/* Categoría - Estilo bloque técnico, recto y sólido */}
+    <span class="text-xs md:text-sm font-black text-brand-light/40 group-hover:text-brand-red transition-all tracking-[0.2em] uppercase cursor-default py-4 md:py-8 flex items-center gap-2">
+      {item.label}
+      <svg xmlns="http://www.w3.org/2000/svg" class="w-3 h-3 opacity-30 hidden md:block group-hover:rotate-180 transition-transform" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="4" d="M19 9l-7 7-7-7" />
+      </svg>
+    </span>
+
+    {/* Dropdown Desktop - Cuadrado y agresivo */}
+    <div class="absolute top-full left-0 md:left-1/2 md:-translate-x-1/2 pt-0 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200 translate-y-0 z-50 hidden md:block">
+      <div class="bg-black border-2 border-brand-red/40 rounded-none p-1 w-56 shadow-[10px_10px_0px_rgba(220,38,38,0.1)]">
+        {item.links.map((link) => (
+          <a 
+            href={link.href}
+            target={link.href.startsWith('http') ? "_blank" : "_self"}
+            class="block px-6 py-4 text-xs font-black text-brand-light/60 uppercase tracking-tighter hover:bg-brand-red hover:text-white transition-all border-b border-white/5 last:border-0"
+          >
+            {link.name}
+          </a>
+        ))}
+      </div>
+    </div>
+
+    {/* Vista Móvil */}
+    <div class="flex flex-col items-center md:hidden gap-4 mb-8">
+       {item.links.map((link) => (
+          <a 
+            href={link.href}
+            target={link.href.startsWith('http') ? "_blank" : "_self"}
+            class="text-xs font-black text-brand-light/80 hover:text-brand-red uppercase tracking-widest transition-all"
+          >
+            {link.name}
+          </a>
+        ))}
+    </div>
+  </div>
+))}

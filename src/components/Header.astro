@@ -1,9 +1,8 @@
 ---
-// src/components/Header.astro
 import Menu from './Menu.astro';
 ---
 
-<header class="fixed top-0 left-0 w-full z-50 bg-[#050000] border-b border-brand-red shadow-[0_4px_20px_rgba(220,38,38,0.15)] backdrop-blur-md">
+<header class="fixed top-0 left-0 w-full z-50 bg-[#050000]/80 border-b border-brand-red/30 shadow-[0_4px_20px_rgba(0,0,0,0.5)] backdrop-blur-md">
   <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
     <div class="flex justify-between items-center h-20">
       
@@ -13,7 +12,8 @@ import Menu from './Menu.astro';
         </span>
       </a>
 
-      <nav class="hidden md:flex gap-8 items-center">
+      {/* Nav Desktop - Con espacio para los submenús */}
+      <nav class="hidden md:flex gap-10 items-center h-full">
         <Menu />
       </nav>
 
@@ -26,8 +26,9 @@ import Menu from './Menu.astro';
     </div>
   </div>
 
-  <div id="mobile-menu-panel" class="hidden md:hidden bg-[#050000] border-t border-brand-red/20 absolute w-full shadow-2xl">
-    <nav class="flex flex-col items-center gap-6 py-8">
+  {/* Panel Móvil */}
+  <div id="mobile-menu-panel" class="hidden md:hidden bg-[#050000]/95 border-t border-brand-red/20 absolute w-full shadow-2xl h-screen overflow-y-auto">
+    <nav class="flex flex-col items-center gap-2 py-10">
       <Menu />
     </nav>
   </div>
@@ -44,19 +45,20 @@ import Menu from './Menu.astro';
 </style>
 
 <script>
-  // Lógica para abrir/cerrar el menú en celular
   const btn = document.getElementById('mobile-menu-btn');
   const panel = document.getElementById('mobile-menu-panel');
   
   btn?.addEventListener('click', () => {
     panel?.classList.toggle('hidden');
+    // Prevenir scroll cuando el menú está abierto
+    document.body.classList.toggle('overflow-hidden');
   });
 
-  // Cerrar el menú automáticamente al hacer clic en un enlace
   const mobileLinks = panel?.querySelectorAll('a');
   mobileLinks?.forEach(link => {
     link.addEventListener('click', () => {
       panel?.classList.add('hidden');
+      document.body.classList.remove('overflow-hidden');
     });
   });
 </script>

@@ -1,5 +1,6 @@
-import { useState, useMemo } from 'react';
+import { useState, useMemo, useEffect } from 'react';
 import type { PricingTier, CalcOption, YCHPiece } from '../data/sheets';
+import { paymentMethods } from '../data/payments';
 
 export const useCommissionLogic = (prices: PricingTier[], config: CalcOption[]) => {
   // 1. ESTADOS
@@ -11,6 +12,38 @@ export const useCommissionLogic = (prices: PricingTier[], config: CalcOption[]) 
   const [ychSelection, setYchSelection] = useState<YCHPiece | null>(null);
   const [paymentMethod, setPaymentMethod] = useState('PayPal');
   const [isConfirmed, setIsConfirmed] = useState(false);
+
+  // MAGIA YCH: Ajuste automático de base y personajes
+  useEffect(() => {
+    if (ychSelection) {
+      // 1. AUTO-SELECCIÓN DE ENCUADRE
+      if (ychSelection.body_type && prices.length > 0) {
+        // ✨ NORMALIZADOR: Borra espacios y pone minúsculas a todo.
+        const normalize = (str: string) => str.toLowerCase().replace(/\s+/g, '');
+
+        const currentStyle = baseSelection ? baseSelection.tier : prices[0]?.tier;
+
+        // Ahora comparamos usando el normalizador
+        const matchingBase = prices.find(
+          (p) => normalize(p.description) === normalize(ychSelection.body_type) && p.tier === currentStyle,
+        );
+
+        if (matchingBase && (!baseSelection || baseSelection.description !== matchingBase.description)) {
+          setBaseSelection(matchingBase);
+        }
+      }
+
+      // 2. AUTO-AJUSTE DE PERSONAJES
+      const chars = parseInt(ychSelection.num_chars || '1', 10);
+      if (!isNaN(chars) && chars > 0) {
+        setExtraChars(chars);
+      } else {
+        setExtraChars(1);
+      }
+    } else {
+      setExtraChars(1);
+    }
+  }, [ychSelection, prices, baseSelection]);
 
   // 2. REGLA DEL FULLCOLOR (Detectamos si la base elegida es Fullcolor)
   const isFullcolor = useMemo(() => {
@@ -87,12 +120,19 @@ export const useCommissionLogic = (prices: PricingTier[], config: CalcOption[]) 
 
     // Neto antes de fees
     const net = subtotal * multiplier * charMultiplier;
-
-    // Cálculo real de PayPal
     let gross = net;
     let fees = 0;
-    if (net > 0 && paymentMethod === 'PayPal') {
-      gross = (net + 0.3) / 0.946;
+
+    if (net > 0) {
+      // Buscamos el método seleccionado dentro de TU lista única
+      const methodData = paymentMethods.find((m) => m.name === paymentMethod) || paymentMethods[0];
+
+      if (methodData.name === 'Artistree') {
+        gross = net * (1 + methodData.percentage);
+      } else {
+        // Fórmula universal usando los datos de TU lista
+        gross = (net + methodData.fixed) / (1 - methodData.percentage);
+      }
       fees = gross - net;
     }
 

@@ -2,32 +2,72 @@
 import '../styles/global.css';
 import Header from '../components/Header.astro';
 import Footer from '../components/Footer.astro';
+import PromoBanner from '../components/PromoBanner.tsx';
 
 interface Props {
-	title: string;
+    title: string;
+    description?: string;
+    image?: string;
 }
 
-const { title } = Astro.props;
+const { 
+    title, 
+    description = "Tarquitet - Professional Illustrator, Programmer & Designer. Digital Art Commissions and Portfolio.",
+    image = "/favicon/social-preview.jpg" 
+} = Astro.props;
+
+// 1. DEFINIR LA URL BASE (Evita errores de URL inválida en local)
+const siteURL = Astro.site ? Astro.site.href : "https://art.tarquitet.com";
+
+// 2. DEFINIR LA VARIABLE QUE FALTABA
+const canonicalURL = new URL(Astro.url.pathname, siteURL);
+
+// 3. GENERAR LA URL COMPLETA PARA LA IMAGEN DE PREVISUALIZACIÓN
+const socialImageURL = new URL(image, siteURL);
 ---
 
 <!doctype html>
 <html lang="en" class="bg-brand-black text-brand-light selection:bg-brand-red selection:text-white">
-	<head>
-		<meta charset="UTF-8" />
-		<meta name="description" content="Tarquitet - Commissions and Portfolio" />
-		<meta name="viewport" content="width=device-width" />
-		<link rel="icon" type="image/svg+xml" href="/tarquitet-commissions/public/favicon/favicon.svg" />
-    	<link rel="apple-touch-icon" sizes="180x180" href="/tarquitet-commissions/public/favicon/favicon.png" />
-		<link rel="shortcut icon" href="/tarquitet-commissions/public/favicon/favicon.ico" />
-		<title>{title}</title>
-	</head>
-	<body class="min-h-screen flex flex-col font-sans antialiased overflow-x-hidden pt-20">
-		<Header />
-		
-		<main class="flex-grow">
-			<slot />
-		</main>
+    <head>
+        <meta charset="UTF-8" />
+        <meta name="viewport" content="width=device-width" />
+        <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+        <meta name="generator" content={Astro.generator} />
 
-		<Footer />
-	</body>
+        <title>{title} | Tarquitet</title>
+        <meta name="title" content={`${title} | Tarquitet`} />
+        <meta name="description" content={description} />
+        
+        <link rel="canonical" href={canonicalURL} />
+        
+        <meta name="keywords" content="Multimedia Engineer, Digital Artist, Character Design, Programmer, Tarquitet, Colombia, Web Development" />
+        <meta name="author" content="David Josué Pinto Gómez (Tarquitet)" />
+
+        <meta property="og:type" content="website" />
+        <meta property="og:url" content={canonicalURL} />
+        <meta property="og:title" content={title} />
+        <meta property="og:description" content={description} />
+        <meta property="og:image" content={socialImageURL} />
+
+        <meta property="twitter:card" content="summary_large_image" />
+        <meta property="twitter:url" content={canonicalURL} />
+        <meta property="twitter:title" content={title} />
+        <meta property="twitter:description" content={description} />
+        <meta property="twitter:image" content={socialImageURL} />
+
+        <link rel="preconnect" href="https://fonts.googleapis.com">
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;700;900&family=JetBrains+Mono:wght@400;700&display=swap" rel="stylesheet">
+    </head>
+    <body class="min-h-screen flex flex-col font-sans antialiased overflow-x-hidden pt-20">
+        <Header />
+
+        <PromoBanner client:load />
+
+        <main class="grow">
+            <slot />
+        </main>
+        
+        <Footer />
+    </body>
 </html>

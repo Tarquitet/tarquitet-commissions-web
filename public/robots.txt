@@ -1,0 +1,4 @@
+User-agent: *
+Allow: /
+
+Sitemap: https://art.tarquitet.com/sitemap-index.xml

@@ -6,9 +6,10 @@ export const CategoryGrid = ({ title, options, selection, onSelect, isMulti = fa
 
   return (
     <div className="space-y-4">
-      <h4 className="text-brand-red font-black text-[10px] uppercase tracking-[0.3em]">{title}</h4>
-      {/* Usamos grid-cols-2 o 3 para que las tarjetas verticales quepan bien */}
-      <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-4">
+      {title && <h4 className="text-brand-red font-black text-[10px] uppercase tracking-[0.3em]">{title}</h4>}
+
+      {/* AQUÍ ESTÁ LA SOLUCIÓN: Cambiamos el Grid por una Lista Vertical */}
+      <div className="flex flex-col gap-3">
         {options.map((opt: any) => {
           const isSelected = isMulti ? selection?.includes(opt.label) : selection === opt.label;
           return (

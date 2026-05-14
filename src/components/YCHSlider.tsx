@@ -1,4 +1,4 @@
-import { useState, useEffect, memo } from 'react';
+import { useState, useEffect, memo, useRef } from 'react';
 import { getSheetYCH, type YCHPiece } from '../data/sheets';
 import SecurityWatermark from './SecurityWatermark';
 import { formatHumanTitle, preventActions, getImagePath } from '../utils/formatters';
@@ -9,12 +9,42 @@ export default function YCHSlider() {
   const [loading, setLoading] = useState(true);
   const [selectedYCH, setSelectedYCH] = useState<YCHPiece | null>(null);
 
+  // Variables para el Carrusel
+  const scrollRef = useRef<HTMLDivElement>(null);
+  const [activeIndex, setActiveIndex] = useState(0);
+
   useEffect(() => {
     getSheetYCH().then((data) => {
       setItems(data);
       setLoading(false);
     });
   }, []);
+
+  // Lógica del Scroll y los Puntitos
+  const handleScroll = () => {
+    if (!scrollRef.current) return;
+    const scrollPosition = scrollRef.current.scrollLeft;
+    // Asumimos el ancho de la tarjeta + gap (aprox 280px + 24px)
+    // En Tailwind, calculamos dinámicamente con el primer hijo
+    const itemElement = scrollRef.current.children[0] as HTMLElement;
+    if (!itemElement) return;
+
+    const itemWidth = itemElement.offsetWidth + 24; // 24px es el gap-6
+    const newIndex = Math.round(scrollPosition / itemWidth);
+    setActiveIndex(newIndex);
+  };
+
+  const scrollTo = (index: number) => {
+    if (!scrollRef.current) return;
+    const itemElement = scrollRef.current.children[0] as HTMLElement;
+    if (!itemElement) return;
+
+    const itemWidth = itemElement.offsetWidth + 24;
+    scrollRef.current.scrollTo({
+      left: index * itemWidth,
+      behavior: 'smooth',
+    });
+  };
 
   if (loading)
     return (
@@ -25,20 +55,41 @@ export default function YCHSlider() {
 
   return (
     <section className="relative px-4 md:px-8">
-      {/* GRILLA DE YCH (Reemplaza al antiguo Slider) */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
+      {/* CARRUSEL DE YCH (Reemplaza a la antigua Grilla) */}
+      <div
+        ref={scrollRef}
+        onScroll={handleScroll}
+        className="flex overflow-x-auto gap-6 pb-6 snap-x snap-mandatory custom-scrollbar"
+      >
         {items.map((ych) => (
           <YCHCard key={ych.filename} ych={ych} onClick={() => setSelectedYCH(ych)} />
         ))}
       </div>
 
-      {/* MODAL: FICHA TÉCNICA COMPLETA (Estilo Portafolio) */}
+      {/* PUNTITOS DE PAGINACIÓN (Se muestran si hay más de 1 item) */}
+      {items.length > 1 && (
+        <div className="flex justify-center items-center gap-2 mt-4 mb-8">
+          {items.map((_, i) => (
+            <button
+              key={i}
+              onClick={() => scrollTo(i)}
+              className={`transition-all duration-300 rounded-full ${
+                activeIndex === i
+                  ? 'w-8 h-2 bg-brand-red shadow-[0_0_10px_rgba(220,38,38,0.5)]'
+                  : 'w-2 h-2 bg-white/20 hover:bg-white/40'
+              }`}
+              aria-label={`Ir a la base YCH ${i + 1}`}
+            />
+          ))}
+        </div>
+      )}
+
+      {/* MODAL: FICHA TÉCNICA COMPLETA */}
       {selectedYCH && (
         <div
           className="fixed inset-0 z-100 flex items-center justify-center bg-black/95 backdrop-blur-xl p-4 md:p-10 animate-in fade-in duration-500"
           onClick={() => setSelectedYCH(null)}
         >
-          {/* BOTÓN CERRAR */}
           <button className="absolute top-8 right-8 text-brand-red hover:text-white z-50 transition-colors focus:outline-none">
             <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
               <path d="M18 6 6 18M6 6l12 12" />
@@ -76,16 +127,14 @@ export default function YCHSlider() {
 
               <div className="grid grid-cols-1 gap-y-5">
                 <div className="border-l-2 border-brand-red/20 pl-4 py-1">
-                  <p className="text-brand-red/40 font-mono text-[9px] uppercase tracking-widest mb-1">Precio Base</p>
+                  <p className="text-brand-red/40 font-mono text-[9px] uppercase tracking-widest mb-1">Prece</p>
                   <p className="text-brand-red font-black text-4xl uppercase tracking-tight italic">
                     {selectedYCH.price} <span className="text-sm text-white">USD</span>
                   </p>
                 </div>
 
                 <div className="border-l-2 border-brand-red/20 pl-4 py-1 mt-4">
-                  <p className="text-brand-red/40 font-mono text-[9px] uppercase tracking-widest mb-1">
-                    Encuadre Requerido
-                  </p>
+                  <p className="text-brand-red/40 font-mono text-[9px] uppercase tracking-widest mb-1">Type</p>
                   <p className="text-white font-bold text-lg uppercase tracking-tight italic">
                     {formatHumanTitle(selectedYCH.body_type)}
                   </p>
@@ -94,8 +143,8 @@ export default function YCHSlider() {
 
               <div className="mt-10 p-4 bg-brand-red/5 border border-brand-red/10 rounded-lg">
                 <p className="text-brand-red/40 text-[8px] font-black uppercase tracking-[0.3em] leading-relaxed">
-                  SYSTEM_NOTICE: Los precios del YCH pueden variar dependiendo de la complejidad del personaje original
-                  o los accesorios extras solicitados.
+                  WARNING! Final price can increase by the difficulty of the YCH / Character complexity / Extra
+                  Accessories requested.
                 </p>
               </div>
             </div>
@@ -106,12 +155,13 @@ export default function YCHSlider() {
   );
 }
 
-// SUBCOMPONENTE DE LA TARJETA (Ahora clickeable)
+// SUBCOMPONENTE DE LA TARJETA
+// Ahora tiene w-[280px] shrink-0 y snap-center snap-always
 const YCHCard = memo(({ ych, onClick }: { ych: YCHPiece; onClick: () => void }) => {
   return (
     <div
       onClick={onClick}
-      className="flex flex-col border border-brand-red/10 rounded-2xl overflow-hidden group/card relative bg-[#050000] cursor-zoom-in hover:border-brand-red/50 hover:shadow-[0_0_20px_rgba(220,38,38,0.15)] transition-all duration-300 hover:-translate-y-1"
+      className="shrink-0 w-[280px] sm:w-[300px] snap-center snap-always flex flex-col border border-brand-red/10 rounded-2xl overflow-hidden group/card relative bg-[#050000] cursor-zoom-in hover:border-brand-red/50 hover:shadow-[0_0_20px_rgba(220,38,38,0.15)] transition-all duration-300 hover:-translate-y-1"
     >
       <div className="aspect-4/5 relative">
         <FadeImage

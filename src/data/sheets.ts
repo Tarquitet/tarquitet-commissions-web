@@ -34,6 +34,8 @@ export interface YCHPiece {
   filename: string;
   price: string;
   body_type: string;
+  original_price?: string;
+  num_chars?: string;
 }
 
 export interface GuidelineItem {
@@ -46,6 +48,12 @@ export interface CalcOption {
   label: string;
   value: string;
   value_discount: string;
+}
+
+export interface DiscountConfig {
+  isActive: boolean;
+  percentage: number;
+  endDate: string;
 }
 
 // URL DEL FORMULARIO DE GOOGLE PARA COMISIONAR
@@ -278,4 +286,35 @@ export function getCalculatorConfig(): Promise<CalcOption[]> {
     })();
   }
   return calcConfigCache;
+}
+
+export async function getDiscountConfig(): Promise<DiscountConfig> {
+  try {
+    const response = await fetch(
+      `https://docs.google.com/spreadsheets/d/${import.meta.env.PUBLIC_SHEET_ID}/gviz/tq?tqx=out:csv&gid=${GIDS.CALCULATOR}`,
+    );
+    const csvText = await response.text();
+
+    // 1. EL TRUCO MAGISTRAL: Usamos tu parseCSV que es a prueba de comas decimales
+    const rows = parseCSV(csvText);
+
+    if (rows.length > 1) {
+      const dataRow = rows[1];
+
+      // 2. TRADUCCIÓN LATAM A GRINGO: Cambiamos tu "0,25" a "0.25" para que React no se asuste
+      // Limpiamos también el símbolo de % por si lo escribes en el Sheets
+      const rawPercentageStr = dataRow[5] || '0';
+      const jsValidNumber = rawPercentageStr.replace(',', '.').replace('%', '');
+
+      return {
+        isActive: dataRow[4]?.toUpperCase() === 'SI', // Columna E (Índice 4)
+        percentage: parseFloat(jsValidNumber) || 0, // Columna F (Índice 5)
+        endDate: dataRow[12] || '', // Columna M (Índice 12)
+      };
+    }
+  } catch (error) {
+    console.error('Error fetching discount config:', error);
+  }
+
+  return { isActive: false, percentage: 0, endDate: '' };
 }
