@@ -227,12 +227,6 @@ export default function CalculatorEngine() {
           <p className="text-white/40 text-sm font-mono italic">
             The summary is in your clipboard. You can paste it wherever you prefer.
           </p>
-          <button
-            onClick={() => setIsCopyModalOpen(false)}
-            className="mt-8 px-8 py-3 bg-white text-black font-black uppercase text-xs rounded-full hover:bg-brand-red transition-colors"
-          >
-            Entendido
-          </button>
         </div>
       </GlobalModal>
 

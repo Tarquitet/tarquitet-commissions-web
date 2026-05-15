@@ -1,3 +1,8 @@
+// sheets.ts
+
+// ============================================================================
+// INTERFACES (DEFINICIONES DE DATOS)
+// ============================================================================
 export interface ArtPiece {
   title: string;
   filename: string;
@@ -56,12 +61,13 @@ export interface DiscountConfig {
   endDate: string;
 }
 
-// URL DEL FORMULARIO DE GOOGLE PARA COMISIONAR
+// ============================================================================
+// CONFIGURACIÓN Y GIDs
+// ============================================================================
 export const GOOGLE_FORM_URL = 'https://forms.gle/QLrFdUaHsva3t8Dg8';
 
-// URLs BASE
-const BASE_URL =
-  'https://docs.google.com/spreadsheets/d/e/2PACX-1vQlmh6ewrKoqQ_H35C-6QRHrI5OdzfA8ZDrZZohRxGr-m0NP-1300tvufqQeu3sKfAKQRQR68F_-_l4/pub?output=csv';
+// El ID extraído de tu URL de edición
+const SHEET_ID = '1BJWqRCCR8fXoGahiqDJTna-2DZAV23JRo0YSc3QiY5Y';
 
 const GIDS = {
   ART: '0',
@@ -74,7 +80,7 @@ const GIDS = {
 };
 
 // ============================================================================
-// VARIABLES DE MEMORIA (CACHÉ INTERNO DEL CÓDIGO)
+// CACHÉ EN MEMORIA
 // ============================================================================
 let artworksCache: Promise<ArtPiece[]> | null = null;
 let pricesCache: Promise<PricingTier[]> | null = null;
@@ -85,16 +91,16 @@ let guidelinesCache: Promise<GuidelineItem[]> | null = null;
 let calcConfigCache: Promise<CalcOption[]> | null = null;
 
 // ============================================================================
-// FUNCIÓN DE AYUDA: FETCH ANTICACHÉ
+// MOTOR DE CONSULTAS SQL (GVIZ)
 // ============================================================================
-async function fetchFreshCSV(gid: string): Promise<string[][]> {
-  // Añadimos un parámetro de tiempo único (&t=...) para engañar al caché
+async function fetchSheetQuery(gid: string, query: string = 'SELECT *'): Promise<string[][]> {
   const timestamp = new Date().getTime();
-  const url = `${BASE_URL}&gid=${gid}&cache_buster=${timestamp}`;
+  // Usamos el endpoint gviz/tq para permitir filtrado SQL y evitar caché vieja
+  const url = `https://docs.google.com/spreadsheets/d/${SHEET_ID}/gviz/tq?tqx=out:csv&gid=${gid}&tq=${encodeURIComponent(query)}&cache_buster=${timestamp}`;
 
   try {
     const response = await fetch(url, {
-      cache: 'no-store', // Instrucción directa al navegador para no guardar copia
+      cache: 'no-store',
       headers: { pragma: 'no-cache', 'cache-control': 'no-cache' },
     });
 
@@ -108,7 +114,7 @@ async function fetchFreshCSV(gid: string): Promise<string[][]> {
 }
 
 // ============================================================================
-// MOTOR DE LECTURA CSV
+// MOTOR DE LECTURA CSV (TU PARSER ORIGINAL)
 // ============================================================================
 function parseCSV(text: string): string[][] {
   const result: string[][] = [];
@@ -148,27 +154,28 @@ function parseCSV(text: string): string[][] {
 }
 
 // ============================================================================
-// FETCHERS ACTUALIZADOS (AHORA CON MEMORIA)
+// FETCHERS (MANTIENEN LA FIRMA PARA EL RESTO DEL CÓDIGO)
 // ============================================================================
 
-export function getSheetArtworks(): Promise<ArtPiece[]> {
-  if (!artworksCache) {
-    artworksCache = (async () => {
-      const data = await fetchFreshCSV(GIDS.ART);
+export function getSheetArtworks(limit: number = 50, offset: number = 0): Promise<ArtPiece[]> {
+  // Optimizamos: Si no hay offset, usamos el caché. Si hay paginación, pedimos nuevo.
+  if (!artworksCache || offset > 0) {
+    const query = `SELECT A, B, C, D, E, F, G WHERE A IS NOT NULL ORDER BY G DESC LIMIT ${limit} OFFSET ${offset}`;
+    const promise = (async () => {
+      const data = await fetchSheetQuery(GIDS.ART, query);
       if (data.length < 2) return [];
-      const headers = data[0];
-      return data
-        .slice(1)
-        .map((row) => {
-          const obj: any = {};
-          headers.forEach((h, i) => {
-            obj[h.toLowerCase().trim()] = row[i] || '';
-          });
-          return obj as ArtPiece;
-        })
-        .filter((item) => item.title && item.date && item.filename)
-        .sort((a, b) => parseInt(b.date) - parseInt(a.date));
+      const headers = data[0].map((h) => h.toLowerCase().trim());
+      return data.slice(1).map((row) => {
+        const obj: any = {};
+        headers.forEach((h, i) => {
+          obj[h] = row[i] || '';
+        });
+        return obj as ArtPiece;
+      });
     })();
+
+    if (offset === 0) artworksCache = promise;
+    return promise;
   }
   return artworksCache;
 }
@@ -176,13 +183,13 @@ export function getSheetArtworks(): Promise<ArtPiece[]> {
 export function getSheetPrices(): Promise<PricingTier[]> {
   if (!pricesCache) {
     pricesCache = (async () => {
-      const data = await fetchFreshCSV(GIDS.PRICING);
+      const data = await fetchSheetQuery(GIDS.PRICING, 'SELECT A, B, C, D, E WHERE A IS NOT NULL');
       if (data.length < 2) return [];
-      const headers = data[0];
+      const headers = data[0].map((h) => h.toLowerCase().trim());
       return data.slice(1).map((row) => {
         const obj: any = {};
         headers.forEach((h, i) => {
-          obj[h.toLowerCase().trim()] = row[i] || '';
+          obj[h] = row[i] || '';
         });
         return obj as PricingTier;
       });
@@ -194,13 +201,13 @@ export function getSheetPrices(): Promise<PricingTier[]> {
 export function getSheetExtras(): Promise<ExtraItem[]> {
   if (!extrasCache) {
     extrasCache = (async () => {
-      const data = await fetchFreshCSV(GIDS.EXTRAS);
+      const data = await fetchSheetQuery(GIDS.EXTRAS, 'SELECT A, B WHERE A IS NOT NULL');
       if (data.length < 2) return [];
-      const headers = data[0];
+      const headers = data[0].map((h) => h.toLowerCase().trim());
       return data.slice(1).map((row) => {
         const obj: any = {};
         headers.forEach((h, i) => {
-          obj[h.toLowerCase().trim()] = row[i] || '';
+          obj[h] = row[i] || '';
         });
         return obj as ExtraItem;
       });
@@ -209,23 +216,43 @@ export function getSheetExtras(): Promise<ExtraItem[]> {
   return extrasCache;
 }
 
-export function getSheetTOS(): Promise<TOSItem[]> {
+export async function getSheetTOS(): Promise<TOSItem[]> {
   if (!tosCache) {
     tosCache = (async () => {
-      const data = await fetchFreshCSV(GIDS.TOS);
-      if (data.length < 2) return [];
-      const headers = data[0];
-      return data
-        .slice(1)
-        .map((row) => {
-          const obj: any = {};
-          headers.forEach((h, i) => {
-            obj[h.toLowerCase().trim()] = row[i] || '';
-          });
-          if (!obj.type) obj.type = 'I';
-          return obj as TOSItem;
-        })
-        .sort((a, b) => parseInt(a.order || '0') - parseInt(b.order || '0'));
+      // Usamos la URL de exportación directa (la que no falla con celdas vacías)
+      const url = `https://docs.google.com/spreadsheets/d/${SHEET_ID}/export?format=csv&gid=${GIDS.TOS}&t=${new Date().getTime()}`;
+
+      try {
+        const response = await fetch(url, { cache: 'no-store' });
+        if (!response.ok) return [];
+        const text = await response.text();
+        const data = parseCSV(text);
+
+        if (data.length < 2) return [];
+
+        return (
+          data
+            .slice(1)
+            .map((row) => ({
+              type: row[0] || 'I',
+              order: row[1] || '', // Lo dejamos como string por ahora
+              title: row[2] || '',
+              content: row[3] || '',
+              update_date: row[4] || '',
+            }))
+            // Filtramos solo las que tienen contenido real para no renderizar filas vacías
+            .filter((item) => item.title || item.content)
+            // Ordenamos solo si 'order' tiene un número
+            .sort((a, b) => {
+              const valA = parseInt(a.order) || 999;
+              const valB = parseInt(b.order) || 999;
+              return valA - valB;
+            })
+        );
+      } catch (e) {
+        console.error('Error cargando TOS:', e);
+        return [];
+      }
     })();
   }
   return tosCache;
@@ -234,15 +261,15 @@ export function getSheetTOS(): Promise<TOSItem[]> {
 export function getSheetYCH(): Promise<YCHPiece[]> {
   if (!ychCache) {
     ychCache = (async () => {
-      const data = await fetchFreshCSV(GIDS.YCH);
+      const data = await fetchSheetQuery(GIDS.YCH, 'SELECT A, B, C, D, E, F WHERE A IS NOT NULL');
       if (data.length < 2) return [];
-      const headers = data[0];
+      const headers = data[0].map((h) => h.toLowerCase().trim());
       return data
         .slice(1)
         .map((row) => {
           const obj: any = {};
           headers.forEach((h, i) => {
-            obj[h.toLowerCase().trim()] = row[i] || '';
+            obj[h] = row[i] || '';
           });
           return obj as YCHPiece;
         })
@@ -255,13 +282,13 @@ export function getSheetYCH(): Promise<YCHPiece[]> {
 export function getSheetGuidelines(): Promise<GuidelineItem[]> {
   if (!guidelinesCache) {
     guidelinesCache = (async () => {
-      const data = await fetchFreshCSV(GIDS.GUIDELINES);
+      const data = await fetchSheetQuery(GIDS.GUIDELINES, 'SELECT A, B WHERE A IS NOT NULL');
       if (data.length < 2) return [];
-      const headers = data[0];
+      const headers = data[0].map((h) => h.toLowerCase().trim());
       return data.slice(1).map((row) => {
         const obj: any = {};
         headers.forEach((h, i) => {
-          obj[h.toLowerCase().trim()] = row[i] || '';
+          obj[h] = row[i] || '';
         });
         return obj as GuidelineItem;
       });
@@ -273,7 +300,7 @@ export function getSheetGuidelines(): Promise<GuidelineItem[]> {
 export function getCalculatorConfig(): Promise<CalcOption[]> {
   if (!calcConfigCache) {
     calcConfigCache = (async () => {
-      const data = await fetchFreshCSV(GIDS.CALCULATOR);
+      const data = await fetchSheetQuery(GIDS.CALCULATOR, 'SELECT A, B, C, D WHERE A IS NOT NULL');
       if (data.length < 2) return [];
       const headers = data[0].map((h) => h.toLowerCase().trim());
       return data.slice(1).map((row) => {
@@ -290,26 +317,17 @@ export function getCalculatorConfig(): Promise<CalcOption[]> {
 
 export async function getDiscountConfig(): Promise<DiscountConfig> {
   try {
-    const response = await fetch(
-      `https://docs.google.com/spreadsheets/d/${import.meta.env.PUBLIC_SHEET_ID}/gviz/tq?tqx=out:csv&gid=${GIDS.CALCULATOR}`,
-    );
-    const csvText = await response.text();
+    // Pedimos solo las columnas de control del evento para máxima velocidad
+    const data = await fetchSheetQuery(GIDS.CALCULATOR, 'SELECT E, F, M LIMIT 1 OFFSET 0');
 
-    // 1. EL TRUCO MAGISTRAL: Usamos tu parseCSV que es a prueba de comas decimales
-    const rows = parseCSV(csvText);
-
-    if (rows.length > 1) {
-      const dataRow = rows[1];
-
-      // 2. TRADUCCIÓN LATAM A GRINGO: Cambiamos tu "0,25" a "0.25" para que React no se asuste
-      // Limpiamos también el símbolo de % por si lo escribes en el Sheets
-      const rawPercentageStr = dataRow[5] || '0';
-      const jsValidNumber = rawPercentageStr.replace(',', '.').replace('%', '');
+    if (data.length > 1) {
+      const row = data[1];
+      const jsValidNumber = row[1]?.replace(',', '.').replace('%', '') || '0';
 
       return {
-        isActive: dataRow[4]?.toUpperCase() === 'SI', // Columna E (Índice 4)
-        percentage: parseFloat(jsValidNumber) || 0, // Columna F (Índice 5)
-        endDate: dataRow[12] || '', // Columna M (Índice 12)
+        isActive: row[0]?.toUpperCase() === 'SI',
+        percentage: parseFloat(jsValidNumber) || 0,
+        endDate: row[2] || '',
       };
     }
   } catch (error) {
