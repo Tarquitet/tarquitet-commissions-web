@@ -2,14 +2,10 @@
 import React, { useRef, useState } from 'react';
 import { getImagePath } from '../utils/formatters';
 import FadeImage from './FadeImage';
-import { useDiscount } from '../utils/useDiscount';
 
 export default function PricingCarousel({ tiers, tierExamples }: any) {
   const scrollRef = useRef<HTMLDivElement>(null);
   const [activeIndex, setActiveIndex] = useState(0);
-
-  // EL CEREBRO DEL DESCUENTO
-  const { isPromoActive, calculate } = useDiscount();
 
   const handleScroll = () => {
     if (!scrollRef.current) return;
@@ -77,13 +73,14 @@ export default function PricingCarousel({ tiers, tierExamples }: any) {
               <div className="p-6 flex flex-col flex-grow">
                 <div className="space-y-4 mb-8 flex-grow">
                   {tierItems.map((item: any, i: number) => {
-                    // LÓGICA DE PRECIOS RESPETANDO TU EXCEL
-                    // 1. Extraemos el precio base (ya sea que venga con descuento de excel o no)
-                    const basePriceStr = item.discount_price || item.original_price || '0';
-                    const baseNumeric = parseFloat(basePriceStr.replace(/[^0-9.]/g, ''));
+                    // RETORNAMOS LOS VALORES DE LA TABLA DIRECTAMENTE
+                    const originalPrice = item.original_price || '';
+                    const discountPrice = item.discount_price || '';
 
-                    // 2. Si el sistema global de descuentos está activo, calculamos el nuevo total
-                    const finalPrice = isPromoActive ? calculate(baseNumeric).toFixed(2) : basePriceStr;
+                    // Si el precio de descuento es menor al original (limpiando texto para comparar)
+                    const numOriginal = parseFloat(String(originalPrice).replace(/[^0-9.]/g, '')) || 0;
+                    const numDiscount = parseFloat(String(discountPrice).replace(/[^0-9.]/g, '')) || 0;
+                    const showPromo = numDiscount > 0 && numDiscount < numOriginal;
 
                     return (
                       <div
@@ -95,18 +92,16 @@ export default function PricingCarousel({ tiers, tierExamples }: any) {
                         </span>
 
                         <div className="flex items-center gap-3">
-                          {/* TACHADO: Muestra original_price (si existe en Excel) O el baseNumeric (si hay promo activa del sistema) */}
-                          {(item.original_price || isPromoActive) && (
+                          {/* TACHADO: Muestra original_price si la tabla tiene un descuento activo */}
+                          {showPromo && (
                             <div className="relative">
-                              <span className="text-brand-red/40 text-xl font-black italic">
-                                {isPromoActive ? baseNumeric : item.original_price}
-                              </span>
+                              <span className="text-brand-red/40 text-xl font-black italic">{originalPrice}</span>
                               <div className="absolute top-1/2 left-[-10%] w-[120%] h-[2px] bg-brand-red -rotate-12 transform -translate-y-1/2 shadow-[0_0_8px_rgba(220,38,38,0.5)]"></div>
                             </div>
                           )}
 
                           <span className="text-white font-black text-2xl drop-shadow-[0_0_10px_rgba(255,255,255,0.2)] transition-transform duration-500 group-hover/row:scale-110">
-                            {finalPrice}
+                            {showPromo ? discountPrice : originalPrice}
                           </span>
                           <span className="text-brand-red font-mono text-[10px]">USD</span>
                         </div>

@@ -37,6 +37,16 @@ export default function GuidelinesSection() {
         Content Parameters
       </h4>
 
+      {/* TEXTO DE CUSTOM REQUESTS SUGERIDO POR EVA */}
+      <div className="mb-8 p-5 bg-white/5 border border-white/10 rounded-xl">
+        <p className="text-brand-light/80 text-sm md:text-base leading-relaxed">
+          I am open to a wide variety of themes and concepts! If you have a highly customized idea, a complex scene, or
+          specific requests that don't fit the standard tiers, feel free to send a{' '}
+          <strong className="text-white">Custom Request</strong>. We will discuss the details and I will provide a
+          tailored quote just for you.
+        </p>
+      </div>
+
       {/* MESAJE DE ERROR (Solo aparece si falla) */}
       {error && (
         <p className="text-brand-red font-mono text-[10px] mb-4 p-2 border border-brand-red/20 bg-brand-red/5">
