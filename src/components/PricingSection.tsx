@@ -70,7 +70,7 @@ export default function PricingSection() {
 
       {/* 4. YCH SLIDER */}
       {ychData.length > 0 && (
-        <div className="mt-8 mb-16">
+        <div id="ych" className="mt-8 mb-16">
           <div className="flex flex-col mb-8 px-4 md:px-8">
             <div className="flex items-center gap-4 mb-4">
               <h3 className="text-white font-black text-3xl md:text-4xl uppercase italic tracking-tighter break-words">

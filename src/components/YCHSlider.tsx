@@ -199,7 +199,7 @@ const YCHCard = memo(({ ych, onClick }: { ych: YCHPiece; onClick: () => void }) 
         <SecurityWatermark />
 
         <div className="absolute top-4 right-4 z-30 bg-brand-red text-black font-black px-3 py-1 text-xs uppercase italic rounded-lg shadow-lg">
-          ${ych.price} USD
+          Base price: ${ych.price} USD
         </div>
       </div>
 
