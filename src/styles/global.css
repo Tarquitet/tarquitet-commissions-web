@@ -7,3 +7,24 @@
   --color-brand-gray: #1f2937;
   --color-brand-light: #f3f4f6;
 }
+
+/* COMPORTAMIENTO DE SCROLL SUAVE PARA EL MENÚ */
+html {
+  scroll-behavior: smooth;
+}
+
+/* CLASES PARA ANIMACIÓN AL HACER SCROLL (Scroll Reveal) */
+.reveal-on-scroll {
+  opacity: 0;
+  transform: translateY(40px);
+  /* Quitamos el will-change que causaba el bug permanente */
+  transition:
+    opacity 1s cubic-bezier(0.25, 0.46, 0.45, 0.94),
+    transform 1s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+}
+
+.reveal-on-scroll.is-visible {
+  opacity: 1;
+  /* MAGIA: 'none' destruye la caja invisible y libera el modal a pantalla completa */
+  transform: none;
+}

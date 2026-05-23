@@ -33,16 +33,16 @@ export default function FadeImage({ src, alt, className = '', containerClass = '
       return;
     }
 
-    // MAGIA: Si NO es del Hero (Portafolio, YCH), esperamos a que el usuario haga scroll hacia ella
+    // MAGIA: Si NO es del Hero, esperamos a que el usuario haga scroll
     const observer = new IntersectionObserver(
       ([entry]) => {
         if (entry.isIntersecting) {
-          loadImage(); // Descarga cuando aparece en pantalla
-          observer.disconnect(); // Dejamos de observar una vez que inicia
+          loadImage();
+          observer.disconnect();
         }
       },
       { rootMargin: '200px' },
-    ); // Empieza a descargar 200px antes de que se vea
+    );
 
     if (containerRef.current) observer.observe(containerRef.current);
 
@@ -54,14 +54,18 @@ export default function FadeImage({ src, alt, className = '', containerClass = '
 
   return (
     <div ref={containerRef} className={`relative bg-[#050000] overflow-hidden ${containerClass}`}>
-      {/* SKELETON: Mientras se descarga, muestra el fondo pulsante */}
-      {!localSrc && (
-        <div className="absolute inset-0 bg-brand-red/5 animate-pulse flex items-center justify-center">
-          <span className="text-brand-red/20 font-mono text-[8px] uppercase tracking-widest">CARGANDO_</span>
-        </div>
-      )}
+      {/* CAPA DE TRANSICIÓN: Siempre está arriba (z-10) hasta que la imagen carga al 100% */}
+      <div
+        className={`absolute inset-0 z-10 bg-[#050000] flex items-center justify-center transition-opacity duration-1000 ease-in-out ${
+          isLoaded ? 'opacity-0 pointer-events-none' : 'opacity-100'
+        }`}
+      >
+        <span className="text-brand-red/20 font-mono text-[8px] uppercase tracking-widest animate-pulse">
+          {!localSrc ? 'LOADING_' : 'RENDERING_'}
+        </span>
+      </div>
 
-      {/* LA IMAGEN: Se renderiza con el archivo físico */}
+      {/* LA IMAGEN: Se pinta debajo del cuadro negro y cuando está lista avisa para desvanecerlo */}
       {localSrc && (
         <img
           ref={imgRef}
@@ -72,7 +76,7 @@ export default function FadeImage({ src, alt, className = '', containerClass = '
           onContextMenu={preventActions}
           onDragStart={preventActions}
           onLoad={() => setIsLoaded(true)}
-          className={`transition-opacity duration-1000 ease-out ${isLoaded ? 'opacity-100' : 'opacity-0'} ${className}`}
+          className={`${className}`}
         />
       )}
     </div>

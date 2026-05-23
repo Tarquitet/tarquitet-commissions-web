@@ -9,18 +9,14 @@ export default function GuidelinesSection() {
   useEffect(() => {
     getSheetGuidelines()
       .then((data) => {
-        console.log('=== DEBUG GUIDELINES ===');
-        console.table(data); // Esto te mostrará en la consola si los datos llegan o no
-
         if (data.length === 0) {
-          setError("No data found. Check the GID and the 'type' and 'content' headers.");
+          setError('No data found.');
         }
-
         setItems(data);
         setLoading(false);
       })
-      .catch((err) => {
-        setError('Connection error with Google Sheets.');
+      .catch(() => {
+        setError('Connection error with database.');
         setLoading(false);
       });
   }, []);
@@ -31,51 +27,45 @@ export default function GuidelinesSection() {
   if (loading) return <div className="h-40 animate-pulse bg-white/5 rounded-2xl mb-12"></div>;
 
   return (
-    <div className="bg-[#050000] border border-brand-red/20 rounded-2xl p-8 relative overflow-hidden mb-12">
-      <h4 className="text-white font-black text-xl uppercase italic mb-6 flex items-center gap-3">
-        <span className="w-2 h-2 bg-brand-red"></span>
-        Content Parameters
-      </h4>
-
-      {/* TEXTO DE CUSTOM REQUESTS SUGERIDO POR EVA */}
-      <div className="mb-8 p-5 bg-white/5 border border-white/10 rounded-xl">
-        <p className="text-brand-light/80 text-sm md:text-base leading-relaxed">
-          I am open to a wide variety of themes and concepts! If you have a highly customized idea, a complex scene, or
-          specific requests that don't fit the standard tiers, feel free to send a{' '}
-          <strong className="text-white">Custom Request</strong>. We will discuss the details and I will provide a
-          tailored quote just for you.
-        </p>
-      </div>
-
-      {/* MESAJE DE ERROR (Solo aparece si falla) */}
+    // Quitamos la caja cerrada (bg-[#050000] border-...) para que se integre libre en la página
+    <div className="relative mb-12">
       {error && (
-        <p className="text-brand-red font-mono text-[10px] mb-4 p-2 border border-brand-red/20 bg-brand-red/5">
-          [SISTEMA]: {error}
+        <p className="text-brand-red font-mono text-[10px] mb-8 p-2 border border-brand-red/20 bg-brand-red/5 w-fit uppercase tracking-widest">
+          [DATA_ERROR]: {error}
         </p>
       )}
 
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-10">
+      {/* Grid abierto, sin fondos cerrados */}
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-12 md:gap-20">
+        {/* COLUMNA: I DRAW */}
         <div>
-          <h5 className="text-white font-bold text-xs uppercase tracking-widest mb-4 flex items-center gap-2 border-b border-white/10 pb-2">
-            <span className="text-green-500">+</span> Allowed
+          <h5 className="text-white font-black text-2xl uppercase italic tracking-tighter mb-6 flex items-center gap-4">
+            I Draw
+            <div className="flex-1 h-[1px] bg-white/10"></div>
           </h5>
-          <ul className="space-y-3">
+          <ul className="space-y-4">
             {allowed.map((item, i) => (
-              <li key={i} className="text-brand-light/80 text-sm flex gap-2">
-                <span className="text-brand-red/50">/</span> {item.content}
+              <li key={i} className="text-brand-light/80 text-sm md:text-base flex gap-4 items-start group">
+                <span className="text-green-500/50 font-bold group-hover:text-green-400 transition-colors">✚</span>
+                <span>{item.content}</span>
               </li>
             ))}
           </ul>
         </div>
 
+        {/* COLUMNA: I DON'T DRAW */}
         <div>
-          <h5 className="text-white font-bold text-xs uppercase tracking-widest mb-4 flex items-center gap-2 border-b border-white/10 pb-2">
-            <span className="text-brand-red">-</span> Restricted
+          <h5 className="text-white font-black text-2xl uppercase italic tracking-tighter mb-6 flex items-center gap-4">
+            I Don't Draw
+            <div className="flex-1 h-[1px] bg-brand-red/20"></div>
           </h5>
-          <ul className="space-y-3">
+          <ul className="space-y-4">
             {restricted.map((item, i) => (
-              <li key={i} className="text-brand-light/40 text-sm flex gap-2 line-through decoration-brand-red/30">
-                <span className="text-brand-red/30">/</span> {item.content}
+              <li key={i} className="text-brand-light/50 text-sm md:text-base flex gap-4 items-start group">
+                <span className="text-brand-red/75 font-bold group-hover:text-brand-red transition-colors">X</span>
+                <span className="line-through decoration-brand-red/30 group-hover:decoration-brand-red transition-colors">
+                  {item.content}
+                </span>
               </li>
             ))}
           </ul>

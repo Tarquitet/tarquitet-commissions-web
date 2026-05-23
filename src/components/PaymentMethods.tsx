@@ -30,7 +30,7 @@ export default function PaymentMethods() {
           // Subcomponente visual del botón para no repetir código
           const PaymentIcon = () => (
             <>
-              <div className="w-16 h-16 bg-[#050000] border border-brand-red/20 rounded-xl flex items-center justify-center p-3 group-hover:border-brand-red group-hover:shadow-[0_0_15px_rgba(220,38,38,0.2)] transition-all duration-500">
+              <div className="w-16 h-16 bg-white border border-brand-red/30 rounded-xl flex items-center justify-center p-3 group-hover:bg-white/20 group-hover:border-brand-red group-hover:shadow-[0_0_15px_rgba(220,38,38,0.4)] transition-all duration-500">
                 <img
                   src={method.icon}
                   alt={`Logo of ${method.name}`}

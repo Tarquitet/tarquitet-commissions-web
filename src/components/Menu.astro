@@ -1,36 +1,37 @@
 ---
 // src/components/Menu.astro
 
-// El link del formulario viene de tu configuración en sheets.ts
-const GOOGLE_FORM_URL = 'https://forms.gle/QLrFdUaHsva3t8Dg8';
+const TRELLO_QUEUE_URL = 'https://trello.com/b/FWKiXk3t/tarquitet-commission-queue';
 
 const navData = [
   {
     label: "Work",
     links: [
       { name: "Gallery", href: "/#portfolio" },
-      { name: "About Me", href: "/#about" },
     ],
   },
   {
-    label: "Prices",
+    label: "Info",
     links: [
       { name: "Pricing", href: "/#pricing" },
+      { name: "Rules", href: "/#rules" },
+      { name: "T.O.S", href: "/#tos" },
     ],
   },
   {
-    label: "Legal",
+    label: "Status",
     links: [
-      { name: "Rules", href: "/#rules" },
-      { name: "T.O.S.", href: "/#tos" },
+      { name: "Public Queue (Trello)", href: TRELLO_QUEUE_URL },
     ],
   },
   {
     label: "Contact",
     links: [
+      { name: "DeviantArt", href: "https://www.deviantart.com/tarquitet2002" },
+      { name: "Discord", href: "https://discord.com/invite/REMWQJRpnH" },
       { name: "Contact Info", href: "/#contact" },
-      { name: "Google Form", href: GOOGLE_FORM_URL },
-      { name: "Professional Web", href: "https://tarquitet.com" },
+      { name: "Request Form", href: "/#form" },
+      { name: "Twitter / X", href: "https://x.com/tarquitet" },
     ],
   },
 ];

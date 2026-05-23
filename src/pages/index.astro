@@ -11,37 +11,81 @@ import GuidelinesSection from '../components/GuidelinesSection';
     <Hero />
 
     <main class="space-y-40 pb-32">
-
-        <section id="rules" class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <section id="portfolio" class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 reveal-on-scroll">
             <div class="flex flex-col mb-16 border-b border-brand-red/20 pb-6">
-                <h3 class="text-brand-red font-black tracking-tighter text-4xl md:text-6xl uppercase italic break-words">WILL - WON'T DRAW</h3>
-            </div>
-
-            <GuidelinesSection client:load />
-        </section>
-
-        <section id="portfolio" class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div class="flex flex-col mb-16 border-b border-brand-red/20 pb-6">
-                    <h3 class="text-brand-red font-black tracking-tighter text-4xl md:text-6xl uppercase italic break-words">Gallery</h3>
+                <h3 class="text-brand-red font-black tracking-tighter text-4xl md:text-5xl uppercase italic break-words">
+                    Selected Works
+                </h3>
+                <p class="text-brand-light/70 mt-4 text-sm md:text-base max-w-3xl leading-relaxed">
+                    A look into my recent digital illustrations. My work focuses heavily on character design, solid anatomy, and exploring different aesthetics. Browse through to see if my artistic direction fits the vision you have in mind.
+                </p>
             </div>
 
             <PortfolioGallery client:load />
         </section>
 
-        <section id="pricing" class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <section id="pricing" class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 reveal-on-scroll">
             <div class="flex flex-col mb-16 border-b border-brand-red/20 pb-6">
-                <h3 class="text-brand-red font-black tracking-tighter text-4xl md:text-6xl uppercase italic break-words">Pricing</h3>
+                <h3 class="text-brand-red font-black tracking-tighter text-4xl md:text-5xl uppercase italic break-words">
+                    Commission Tiers
+                </h3>
+                <p class="text-brand-light/70 mt-4 text-sm md:text-base max-w-3xl leading-relaxed">
+                    Transparent pricing based on the level of detail and format. Choose the base tier that best fits your project. Please note that highly complex character designs, extra details, complex/difficult poses, or specific backgrounds may adjust the final quote.
+                </p>
             </div>
             
             <PricingSection client:load />
         </section>
 
-        <section id="tos" class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <section id="rules" class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 reveal-on-scroll">
             <div class="flex flex-col mb-16 border-b border-brand-red/20 pb-6">
-                <h3 class="text-brand-red font-black tracking-tighter text-4xl md:text-6xl uppercase italic break-words">Terms of Service</h3>
+                <h3 class="text-brand-red font-black tracking-tighter text-4xl md:text-5xl uppercase italic break-words">
+                    Working Scope
+                </h3>
+                <p class="text-brand-light/70 mt-4 text-sm md:text-base max-w-3xl leading-relaxed">
+                    To guarantee the highest quality in every piece, I only take on requests that align with my skills and comfort zone. Review these boundaries before submitting your character idea to ensure we are on the same page.
+                
+                If you have a highly customized idea or specific requests that don't fit
+                the standard tiers, feel free to send a{' '}
+                <strong class="text-white uppercase tracking-widest">Custom Request</strong> (or just DM me on Discord). We
+                will discuss the details for a tailored quote.
+                </p>
+            </div>
+
+            <GuidelinesSection client:load />
+        </section>
+
+        <section id="tos" class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 reveal-on-scroll">
+            <div class="flex flex-col mb-16 border-b border-brand-red/20 pb-6">
+                <h3 class="text-brand-red font-black tracking-tighter text-4xl md:text-5xl uppercase italic break-words">
+                    Terms of Service
+                </h3>
+                <p class="text-brand-light/70 mt-4 text-sm md:text-base max-w-3xl leading-relaxed">
+                    The fundamental rules of how I handle payments, revisions, and deadlines. By requesting a commission, you automatically agree to these conditions, ensuring a clear and professional process for both of us.
+                </p>
             </div>
             
             <TOSSection client:load />
+        </section>
+
+        {/* --- NUEVA SECCIÓN: CALL TO ACTION FINAL --- */}
+        <section id="form" class="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 mt-32 mb-10 reveal-on-scroll">
+            <div class="bg-[#050000] border border-brand-red/30 p-12 text-center relative overflow-hidden group">
+                {/* Luces de fondo que reaccionan al hover */}
+                <div class="absolute inset-0 bg-brand-red/5 group-hover:bg-brand-red/10 transition-colors duration-500"></div>
+                <div class="absolute -top-24 -right-24 w-48 h-48 bg-brand-red/20 blur-[60px] rounded-full"></div>
+                
+                <h3 class="text-3xl md:text-5xl font-black text-white uppercase italic mb-4 relative z-10">
+                  Ready to bring your idea to life?
+                </h3>
+                <p class="text-brand-light/60 text-sm tracking-widest mb-10 relative z-10 uppercase">
+                  Slots are limited. Secure your spot now.
+                </p>
+
+                <a href="https://forms.gle/QLrFdUaHsva3t8Dg8" target="_blank" class="relative z-10 inline-flex items-center gap-3 px-12 py-5 bg-brand-red text-white font-black text-lg tracking-[0.2em] uppercase hover:scale-105 hover:shadow-[0_0_40px_rgba(220,38,38,0.8)] transition-all duration-300">
+                    🚀 Submit Request
+                </a>
+            </div>
         </section>
     </main>
 </Layout>

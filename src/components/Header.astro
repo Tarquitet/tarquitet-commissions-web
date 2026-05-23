@@ -2,14 +2,18 @@
 import Menu from './Menu.astro';
 ---
 
-<header class="fixed top-0 left-0 w-full z-50 bg-[#050000]/80 border-b border-brand-red/30 shadow-[0_4px_20px_rgba(0,0,0,0.5)] backdrop-blur-md">
+{/* Cambiamos el opacity-100 por opacity-0 y agregamos el translate para esconderlo al inicio */}
+<header id="main-header" class="fixed top-0 left-0 w-full z-50 bg-[#050000]/90 border-b border-brand-red/30 shadow-[0_4px_20px_rgba(0,0,0,0.5)] backdrop-blur-md transition-all duration-500 opacity-0 -translate-y-full">
   <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
     <div class="flex justify-between items-center h-20">
       
-      <a href="/" class="relative overflow-hidden group">
-        <span class="text-3xl font-black tracking-tighter bg-linear-to-r from-brand-red via-[#ff4d4d] to-brand-red bg-[length:200%_auto] bg-clip-text text-transparent animate-shimmer">
-          TARQUITET
-        </span>
+      <a href="/#about" class="relative overflow-hidden group flex items-center justify-center">
+        <img 
+          src="/signature.png" 
+          alt="Tarquitet Signature" 
+          class="h-12 w-auto object-contain transition-all duration-300 group-hover:scale-105"
+        />
+        <span class="sr-only">TARQUITET</span>
       </a>
 
       {/* Nav Desktop - Con espacio para los submenús */}
@@ -45,12 +49,12 @@ import Menu from './Menu.astro';
 </style>
 
 <script>
+  // --- LÓGICA DEL MENÚ MÓVIL (Tuya) ---
   const btn = document.getElementById('mobile-menu-btn');
   const panel = document.getElementById('mobile-menu-panel');
   
   btn?.addEventListener('click', () => {
     panel?.classList.toggle('hidden');
-    // Prevenir scroll cuando el menú está abierto
     document.body.classList.toggle('overflow-hidden');
   });
 
@@ -60,5 +64,26 @@ import Menu from './Menu.astro';
       panel?.classList.add('hidden');
       document.body.classList.remove('overflow-hidden');
     });
+  });
+
+  // --- NUEVA LÓGICA: MOSTRAR HEADER AL HACER SCROLL ---
+  const header = document.getElementById('main-header');
+  
+  window.addEventListener('scroll', () => {
+    // Si el usuario baja más de 100px (sale del inicio del Hero), mostramos el menú
+    if (window.scrollY > 100) {
+      header?.classList.remove('opacity-0', '-translate-y-full');
+      header?.classList.add('opacity-100', 'translate-y-0');
+    } else {
+      // Si sube al inicio del todo, lo volvems a esconder
+      header?.classList.add('opacity-0', '-translate-y-full');
+      header?.classList.remove('opacity-100', 'translate-y-0');
+      
+      // Aseguramos que si suben rápido, se cierre el panel móvil si estaba abierto
+      if(panel && !panel.classList.contains('hidden')){
+          panel.classList.add('hidden');
+          document.body.classList.remove('overflow-hidden');
+      }
+    }
   });
 </script>

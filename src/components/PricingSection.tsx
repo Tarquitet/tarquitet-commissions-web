@@ -65,9 +65,33 @@ export default function PricingSection() {
 
   return (
     <div className="space-y-32 animate-in fade-in duration-1000 pb-16">
-      {/* ---> NUEVO: MEDIOS DE PAGO LIMPIOS <--- */}
+      {/* 1. PRECIOS BASE */}
+      <PricingCarousel tiers={tiers} tierExamples={tierExamples} />
+
+      {/* 4. YCH SLIDER */}
+      {ychData.length > 0 && (
+        <div className="mt-8 mb-16">
+          <div className="flex flex-col mb-8 px-4 md:px-8">
+            <div className="flex items-center gap-4 mb-4">
+              <h3 className="text-white font-black text-3xl md:text-4xl uppercase italic tracking-tighter break-words">
+                Pre-made<span className="text-brand-red"> Poses</span>
+              </h3>
+              <div className="h-[2px] flex-1 bg-gradient-to-r from-brand-red/50 to-transparent"></div>
+            </div>
+
+            {/* NUEVO PÁRRAFO YCH: Amable, útil y directo */}
+            <p className="text-brand-light/70 text-sm md:text-base max-w-3xl leading-relaxed">
+              Don't have a specific composition in mind? No problem. Browse through these pre-designed bases (Your
+              Character Here). Just pick a pose that catches your eye, and I'll tailor it to fit your character
+              perfectly.
+            </p>
+          </div>
+          <YCHSlider />
+        </div>
+      )}
+
+      {/* ---> MEDIOS DE PAGO LIMPIOS <--- */}
       <div className="border-t border-brand-red/10 relative px-4 text-center">
-        {/* CAMBIO: Letrero rojo modificado a uno más claro, blanco, sin lo rojo de fondo, texto sutil */}
         <div className="mb-10 inline-block bg-black/40 border border-white/5 px-4 py-2 rounded-xl backdrop-blur-sm shadow-[inset_0_1px_2px_rgba(255,255,255,0.05)]">
           <p className="text-brand-light/60 font-mono text-[9px] md:text-xs uppercase tracking-[0.2em] font-normal flex items-center gap-2 justify-center">
             <span className="text-lg animate-pulse text-brand-red">⚠️</span>
@@ -79,22 +103,6 @@ export default function PricingSection() {
         {/* Renderiza tu componente de pagos */}
         <PaymentMethods />
       </div>
-
-      {/* 1. PRECIOS BASE */}
-      <PricingCarousel tiers={tiers} tierExamples={tierExamples} />
-
-      {/* 4. YCH SLIDER */}
-      {ychData.length > 0 && (
-        <div className="mt-8 mb-16">
-          <div className="flex items-center gap-4 mb-6 px-4 md:px-8">
-            <h3 className="text-white font-black text-3xl md:text-4xl uppercase italic tracking-tighter break-words">
-              Poses / Y.C.H <span className="text-brand-red">Available</span>
-            </h3>
-            <div className="h-[2px] flex-1 bg-gradient-to-r from-brand-red/50 to-transparent"></div>
-          </div>
-          <YCHSlider />
-        </div>
-      )}
     </div>
   );
 }
