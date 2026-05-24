@@ -1,23 +1,33 @@
 const CACHE_NAME = 'tarquitet-disk-cache-v1';
 
-// Pequeño registro en memoria solo para no duplicar peticiones SIEMULTÁNEAS
+// Pequeño registro para no duplicar peticiones SIMULTÁNEAS a internet
 const inFlightRequests = new Map<string, Promise<string>>();
+
+// NUEVO: Caché en Memoria RAM (Global para toda la web)
+// Si una imagen ya se procesó, compartimos exactamente el mismo Blob a todos los componentes
+const blobCache = new Map<string, string>();
 
 export const getCachedImage = (url: string): Promise<string> => {
   if (!url) return Promise.resolve('');
 
-  // 1. Si alguien está descargando esta imagen justo ahora, nos unimos a la espera
+  // 1. MAGIA: Si ya tenemos el Blob en memoria RAM, lo devolvemos INMEDIATAMENTE
+  // Esto hace que el Portafolio y los Precios carguen al instante si el Hero ya las mostró.
+  if (blobCache.has(url)) {
+    return Promise.resolve(blobCache.get(url)!);
+  }
+
+  // 2. Si alguien está descargando esta imagen justo ahora, nos unimos a la espera
   if (inFlightRequests.has(url)) {
     return inFlightRequests.get(url)!;
   }
 
   const processImage = async () => {
     try {
-      // 2. Abrimos el DISCO DURO del navegador
+      // 3. Abrimos el DISCO DURO del navegador
       const cache = await caches.open(CACHE_NAME);
       let response = await cache.match(url);
 
-      // 3. Si NO está en el disco, la descargamos de internet
+      // 4. Si NO está en el disco, la descargamos de internet
       if (!response) {
         response = await fetch(url);
         if (response.ok) {
@@ -26,9 +36,14 @@ export const getCachedImage = (url: string): Promise<string> => {
         }
       }
 
-      // 4. Creamos un enlace temporal local solo para mostrarla en el HTML
+      // 5. Creamos el enlace temporal local
       const blob = await response.blob();
-      return URL.createObjectURL(blob);
+      const blobUrl = URL.createObjectURL(blob);
+
+      // 6. LO GUARDAMOS EN RAM para que el resto de la página lo comparta instantáneamente
+      blobCache.set(url, blobUrl);
+
+      return blobUrl;
     } catch (error) {
       console.warn('Fallo al usar disco, usando URL original:', url);
       return url;

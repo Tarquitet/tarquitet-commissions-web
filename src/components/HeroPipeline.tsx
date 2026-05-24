@@ -30,6 +30,8 @@ export default function HeroPipeline() {
   const [deck, setDeck] = useState<string[]>([]);
   const [step, setStep] = useState(0);
   const [isVisible, setIsVisible] = useState(false);
+  // 1. NUEVO ESTADO: Detecta si la pestaña está activa o en segundo plano
+  const [isTabActive, setIsTabActive] = useState(true);
   const containerRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
@@ -41,19 +43,31 @@ export default function HeroPipeline() {
     });
   }, []);
 
+  // 2. EL FIX: Escuchador del navegador para congelar la web si cambian de pestaña
+  useEffect(() => {
+    const handleVisibilityChange = () => {
+      setIsTabActive(!document.hidden);
+    };
+    document.addEventListener('visibilitychange', handleVisibilityChange);
+    return () => document.removeEventListener('visibilitychange', handleVisibilityChange);
+  }, []);
+
   useEffect(() => {
     const observer = new IntersectionObserver(([entry]) => setIsVisible(entry.isIntersecting), { threshold: 0.01 });
     if (containerRef.current) observer.observe(containerRef.current);
     return () => observer.disconnect();
   }, []);
 
+  // 3. ACTUALIZACIÓN DEL MOTOR: Ahora exige que la pestaña esté activa para sumar pasos
   useEffect(() => {
-    if (!isVisible || deck.length === 0) return;
+    if (!isVisible || !isTabActive || deck.length === 0) return;
+
     const interval = setInterval(() => {
       setStep((s) => s + 1);
     }, 3500);
+
     return () => clearInterval(interval);
-  }, [isVisible, deck]);
+  }, [isVisible, isTabActive, deck]); // <-- Añadido isTabActive a las dependencias
 
   // Cargamos 4 cartas visibles + 1 en espera (Standby) para que no haya vacíos
   const visibleIndices = [step - 1, step, step + 1, step + 2, step + 3];
@@ -102,14 +116,12 @@ const HeroCard = memo(({ index, currentStep, src }: { index: number; currentStep
 
   if (!isMounted) {
     if (currentStep === 0 && index < 3) {
-      // Las 3 primeras cartas al cargar la web
       x = t.finalX;
       y = t.finalY - rel * 15;
       opacity = 0;
       darkness = rel === 0 ? 0 : rel === 1 ? 0.5 : 0.85;
       scale = rel === 0 ? 1 : rel === 1 ? 0.95 : 0.9;
     } else {
-      // Cartas nuevas que vienen de afuera
       x = t.startX;
       y = t.startY;
       opacity = 0;
@@ -117,26 +129,22 @@ const HeroCard = memo(({ index, currentStep, src }: { index: number; currentStep
       scale = 0.8;
     }
   } else if (rel < 0) {
-    // Carta que ya cumplió su turno y sale volando a la pantalla del usuario
     x = t.startX * -0.5;
     y = t.startY * -0.5;
     opacity = 0;
     darkness = 0;
     scale = 1.1;
   } else if (rel === 0) {
-    // CARTA AL FRENTE (Brillante)
     x = t.finalX;
     y = t.finalY;
     scale = 1;
     darkness = 0;
   } else if (rel === 1) {
-    // CARTA EN MEDIO (Media sombra)
     x = t.finalX;
     y = t.finalY - 15;
     scale = 0.95;
     darkness = 0.5;
   } else if (rel >= 2) {
-    // CARTA AL FONDO (Entrando envuelta en negro)
     x = t.finalX;
     y = t.finalY - 30;
     scale = 0.9;
@@ -154,7 +162,6 @@ const HeroCard = memo(({ index, currentStep, src }: { index: number; currentStep
         willChange: 'transform, opacity',
       }}
     >
-      {/* EL FIX MÁGICO: priority={true} fijo evita que la imagen colapse a negro al llegar al frente */}
       <FadeImage
         src={src}
         alt="Hero Art"
@@ -164,7 +171,6 @@ const HeroCard = memo(({ index, currentStep, src }: { index: number; currentStep
       />
       <SecurityWatermark />
 
-      {/* Sombra de carga suave */}
       <div
         className="absolute inset-0 bg-[#050000] pointer-events-none z-40"
         style={{
