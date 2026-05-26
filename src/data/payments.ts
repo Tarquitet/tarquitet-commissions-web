@@ -22,14 +22,6 @@ export const paymentMethods: PaymentMethod[] = [
     fixed: 0.3,
   },
   {
-    name: 'Ko-fi',
-    icon: '/ko-fi.png',
-    url: 'https://ko-fi.com/tarquitet',
-    isLocal: false,
-    percentage: 0.0849, // 5% + fees de pasarela
-    fixed: 0.49,
-  },
-  {
     name: 'Artistree',
     icon: '/artistree.svg',
     url: 'https://artistree.io/tarquitet',

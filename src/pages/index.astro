@@ -5,9 +5,10 @@ import TOSSection from '../components/TOSSection.tsx';
 import PortfolioGallery from '../components/PortfolioGallery.tsx';
 import PricingSection from '../components/PricingSection.tsx';
 import GuidelinesSection from '../components/GuidelinesSection';
+import AboutArtist from '../components/AboutArtist.tsx';
 ---
 
-<Layout title="Tarquitet | Comisiones de Arte">
+<Layout title="Tarquitet | Commissions">
     <Hero />
 
     <main class="space-y-40 pb-32">
@@ -22,6 +23,19 @@ import GuidelinesSection from '../components/GuidelinesSection';
             </div>
 
             <PortfolioGallery client:load />
+        </section>
+
+        <section id="about" class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 reveal-on-scroll">
+            <div class="flex flex-col mb-16 border-b border-brand-red/20 pb-6">
+                <h3 class="text-brand-red font-black tracking-tighter text-4xl md:text-5xl uppercase italic break-words">
+                    About the Artist
+                </h3>
+                <p class="text-brand-light/70 mt-4 text-sm md:text-base max-w-3xl leading-relaxed">
+                    I'm Tarquitet, a passionate digital artist specializing in character design and illustration. With a few years of experience & engineering background, I bring a unique blend of creativity and technical skill to every commission. My artistic style is heavily influenced by anime and video game aesthetics, focusing on dynamic poses, expressive characters, and vibrant color palettes. I take pride in delivering high-quality artwork that captures the essence of your vision while maintaining a professional and collaborative process.
+                </p>
+            </div>
+
+            <AboutArtist client:load />
         </section>
 
         <section id="pricing" class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 reveal-on-scroll">

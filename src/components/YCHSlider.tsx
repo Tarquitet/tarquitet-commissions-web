@@ -14,9 +14,9 @@ const parseSafePrice = (priceStr: string | undefined) => {
   return isNaN(val) ? 0 : Math.round(val);
 };
 
-// 2. EXTRACTOR LITERAL: Busca el precio en tu tabla y lo devuelve tal cual
+// 2. EXTRACTOR LITERAL ACTUALIZADO: Ahora también busca el precio del SKETCH
 const getDynamicUpgradeCosts = (bodyType: string, prices: PricingTier[]) => {
-  if (!bodyType || prices.length === 0) return { flatUpgrade: 0, fullUpgrade: 0 };
+  if (!bodyType || prices.length === 0) return { sketchUpgrade: 0, flatUpgrade: 0, fullUpgrade: 0 };
 
   let targetBody = String(bodyType).trim().toUpperCase();
 
@@ -27,18 +27,21 @@ const getDynamicUpgradeCosts = (bodyType: string, prices: PricingTier[]) => {
     return disc > 0 && disc < orig ? disc : orig;
   };
 
-  // Buscamos tu precio oficial de la tabla para ese encuadre
+  // Buscamos los precios oficiales en tu tabla para ese encuadre
+  let sketchRow = prices.find((p) => p.tier.toUpperCase() === 'SKETCH' && p.description.toUpperCase() === targetBody);
   let flatRow = prices.find((p) => p.tier.toUpperCase() === 'FLATCOLOR' && p.description.toUpperCase() === targetBody);
   let fullRow = prices.find((p) => p.tier.toUpperCase() === 'FULLCOLOR' && p.description.toUpperCase() === targetBody);
 
   // Si no encuentra el encuadre (ej: landscape), usa HALFBODY para no devolver $0
-  if (!flatRow || !fullRow) {
-    flatRow = prices.find((p) => p.tier.toUpperCase() === 'FLATCOLOR' && p.description.toUpperCase() === 'FULLBODY');
-    fullRow = prices.find((p) => p.tier.toUpperCase() === 'FULLCOLOR' && p.description.toUpperCase() === 'FULLBODY');
+  if (!sketchRow || !flatRow || !fullRow) {
+    sketchRow = prices.find((p) => p.tier.toUpperCase() === 'SKETCH' && p.description.toUpperCase() === 'HALFBODY');
+    flatRow = prices.find((p) => p.tier.toUpperCase() === 'FLATCOLOR' && p.description.toUpperCase() === 'HALFBODY');
+    fullRow = prices.find((p) => p.tier.toUpperCase() === 'FULLCOLOR' && p.description.toUpperCase() === 'HALFBODY');
   }
 
-  // Devolvemos LITERALMENTE lo que vale en tu tabla
+  // Devolvemos la suma exacta
   return {
+    sketchUpgrade: getRealPrice(sketchRow),
     flatUpgrade: getRealPrice(flatRow),
     fullUpgrade: getRealPrice(fullRow),
   };
@@ -197,7 +200,7 @@ export default function YCHSlider() {
                 <div className="text-left md:text-right">
                   <p className="text-brand-light/50 font-bold uppercase tracking-widest text-xs">YCH Base</p>
                   <p className="text-brand-light/80 text-sm max-w-[250px] leading-tight mt-1">
-                    This is a pre-defined pose. Choose your preferred render level below.
+                    This is a pre-defined composition. Choose your preferred render level below.
                   </p>
                 </div>
               </div>
@@ -209,12 +212,12 @@ export default function YCHSlider() {
 
                   return (
                     <>
+                      {/* FIX AQUÍ: Pasamos el costo del sketchUpgrade a la tarjeta */}
                       <PricingTierCard
                         name="Sketch"
                         basePrice={basePrice}
-                        upgradeCost={0}
+                        upgradeCost={costs.sketchUpgrade}
                         features={['Clean Lineart', 'Base Pose', 'No Colors']}
-                        isBase
                       />
                       <PricingTierCard
                         name="Flatcolor"
@@ -256,8 +259,9 @@ const YCHCard = memo(({ ych, onClick }: { ych: YCHPiece; onClick: () => void }) 
         />
         <SecurityWatermark />
 
+        {/* FIX AQUÍ: Cambiamos STARTING AT por BASE FEE + */}
         <div className="absolute top-4 right-4 z-30 bg-brand-red text-black font-black px-3 py-1 text-xs uppercase italic rounded-lg shadow-lg flex flex-col items-end">
-          <span className="text-[8px] opacity-60 leading-none">STARTING AT</span>${parseSafePrice(ych.price)} USD
+          <span className="text-[8px] opacity-60 leading-none">BASE FEE +</span>${parseSafePrice(ych.price)} USD
         </div>
       </div>
 
@@ -285,14 +289,12 @@ const PricingTierCard = ({
   upgradeCost,
   features,
   isPremium = false,
-  isBase = false,
 }: {
   name: string;
   basePrice: number;
   upgradeCost: number;
   features: string[];
   isPremium?: boolean;
-  isBase?: boolean;
 }) => {
   // AQUI OCURRE LA SUMA LITERAL: YCH + VALOR DE LA TABLA
   const totalPrice = basePrice + upgradeCost;
@@ -313,7 +315,7 @@ const PricingTierCard = ({
           <span className="text-xs text-brand-light/50 not-italic">USD</span>
         </p>
 
-        {!isBase && basePrice > 0 && upgradeCost > 0 && (
+        {basePrice > 0 && upgradeCost > 0 && (
           <p className="text-[10px] text-brand-red/80 font-bold uppercase tracking-widest mt-2">
             (Base ${basePrice} + ${upgradeCost} Upgrade)
           </p>
@@ -327,11 +329,7 @@ const PricingTierCard = ({
           </li>
         ))}
       </ul>
-      {isBase && (
-        <span className="mt-4 text-[9px] uppercase tracking-widest text-brand-light/30 text-center block">
-          Included Base Price
-        </span>
-      )}
+
       {isPremium && (
         <span className="mt-4 text-[9px] uppercase tracking-widest text-brand-red/80 text-center block font-bold">
           Recommended
