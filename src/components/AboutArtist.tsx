@@ -74,7 +74,7 @@ export default function AboutArtist() {
                 className={`px-4 py-2 text-xs md:text-sm font-bold uppercase tracking-widest rounded-md transition-all duration-300 ${
                   activeTab === tab.id
                     ? 'bg-brand-red/10 text-brand-red border border-brand-red/30'
-                    : 'text-brand-light/50 hover:text-white hover:bg-white/5 border border-transparent'
+                    : 'text-brand-light/80 hover:text-white hover:bg-white/5 border border-transparent'
                 }`}
               >
                 {tab.label}

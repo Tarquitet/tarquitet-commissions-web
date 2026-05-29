@@ -37,7 +37,7 @@ export default function PaymentMethods() {
                   className="w-full h-full object-contain opacity-90 group-hover:opacity-100 transition-opacity duration-300"
                 />
               </div>
-              <span className="text-brand-light/50 font-mono text-[10px] uppercase tracking-widest group-hover:text-brand-red transition-colors border-b border-transparent group-hover:border-brand-red pb-1">
+              <span className="text-brand-light/80 font-mono text-[10px] uppercase tracking-widest group-hover:text-brand-red transition-colors border-b border-transparent group-hover:border-brand-red pb-1">
                 {method.name}
               </span>
             </>

@@ -61,7 +61,7 @@ export default function GuidelinesSection() {
           </h5>
           <ul className="space-y-4">
             {restricted.map((item, i) => (
-              <li key={i} className="text-brand-light/50 text-sm md:text-base flex gap-4 items-start group">
+              <li key={i} className="text-brand-light/80 text-sm md:text-base flex gap-4 items-start group">
                 <span className="text-brand-red/75 font-bold group-hover:text-brand-red transition-colors">X</span>
                 <span className="line-through decoration-brand-red/30 group-hover:decoration-brand-red transition-colors">
                   {item.content}

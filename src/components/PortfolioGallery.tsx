@@ -87,6 +87,7 @@ export default function PortfolioGallery() {
         {/* GALERÍA DE IMÁGENES */}
         <div className="relative group/slider">
           <button
+            aria-label="Scroll left"
             onClick={() => scrollSlider('left')}
             className="absolute left-4 top-[40%] -translate-y-1/2 z-40 bg-black/80 border border-brand-red/50 text-brand-red w-12 h-12 rounded-full items-center justify-center opacity-0 group-hover/slider:opacity-100 transition-all hidden md:flex hover:bg-brand-red hover:text-black scale-110"
           >
@@ -105,6 +106,7 @@ export default function PortfolioGallery() {
           </div>
 
           <button
+            aria-label="Scroll right"
             onClick={() => scrollSlider('right')}
             className="absolute right-4 top-[40%] -translate-y-1/2 z-40 bg-black/80 border border-brand-red/50 text-brand-red w-12 h-12 rounded-full items-center justify-center opacity-0 group-hover/slider:opacity-100 transition-all hidden md:flex hover:bg-brand-red hover:text-black scale-110"
           >
@@ -157,7 +159,7 @@ export default function PortfolioGallery() {
                 <h2 className="text-white font-black text-3xl md:text-4xl uppercase tracking-tighter">
                   {formatHumanTitle(selectedArt.title)}
                 </h2>
-                <p className="text-brand-light/50 font-bold tracking-widest uppercase text-sm mt-1">
+                <p className="text-brand-light/80 font-bold tracking-widest uppercase text-sm mt-1">
                   Completed in {selectedArt.date}
                 </p>
               </div>

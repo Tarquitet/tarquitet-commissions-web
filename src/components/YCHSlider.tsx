@@ -198,7 +198,7 @@ export default function YCHSlider() {
                   </div>
                 </div>
                 <div className="text-left md:text-right">
-                  <p className="text-brand-light/50 font-bold uppercase tracking-widest text-xs">YCH Base</p>
+                  <p className="text-brand-light/80 font-bold uppercase tracking-widest text-xs">YCH Base</p>
                   <p className="text-brand-light/80 text-sm max-w-[250px] leading-tight mt-1">
                     This is a pre-defined composition. Choose your preferred render level below.
                   </p>
@@ -274,7 +274,7 @@ const YCHCard = memo(({ ych, onClick }: { ych: YCHPiece; onClick: () => void }) 
             <span className="w-1.5 h-1.5 rounded-full bg-brand-red"></span>
             {formatHumanTitle(ych.body_type)}
           </div>
-          <div className="text-[10px] font-bold uppercase tracking-widest text-brand-light/40 flex items-center gap-1">
+          <div className="text-[10px] font-bold uppercase tracking-widest text-brand-light/70 flex items-center gap-1">
             • {ych.num_chars || '1'} Char{ych.num_chars !== '1' && 's'}
           </div>
         </div>
@@ -312,7 +312,7 @@ const PricingTierCard = ({
       <div className="mb-4">
         <p className="text-3xl font-black text-white italic leading-none">
           {totalPrice === 0 ? '???' : `$${totalPrice}`}{' '}
-          <span className="text-xs text-brand-light/50 not-italic">USD</span>
+          <span className="text-xs text-brand-light/70 not-italic">USD</span>
         </p>
 
         {basePrice > 0 && upgradeCost > 0 && (
