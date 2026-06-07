@@ -6,14 +6,46 @@ const ABOUT_TABS = [
   {
     id: 'the-artist',
     label: 'The Wolfox',
-    title: 'A Weird but Unique Blend',
+    title: 'A Blended Aesthetic',
     content: (
       <>
-        <p className="mb-4">Hi! I'm Tarquitet, and yes, the character you see here is my personal avatar: a Wolfox.</p>
+        <p className="mb-4">Hi! I'm Tarquitet, and the character representing me is my personal avatar: a Wolfox.</p>
         <p>
-          My art style isn't strictly one thing. I love to mix the expressiveness of anime, the proportions of realism,
-          and the exaggerated fun of cartoons. The result is that slightly "weird" but entirely unique aesthetic you see
-          in my gallery. I don't just draw characters; I try to give them a distinct, vibrant personality.
+          My art style is a very specific hybrid. The core structure, linework, and facial expressions draw heavily from{' '}
+          <strong>anime aesthetics</strong>, but the way I apply light, shadows, and highlights pushes the final result
+          into a <strong>semi-realistic</strong> territory.
+        </p>
+        <p className="mt-4">
+          While my subjects are mostly anthropomorphic characters (which inherently brings a stylized or "cartoon"
+          element), my goal is never to leave them flat. I aim to ground them using believable 3D volume and rendering
+          techniques, giving these stylized characters a tangible, vibrant, and solid presence.
+        </p>
+      </>
+    ),
+  },
+  {
+    id: 'the-process',
+    label: 'My Process',
+    title: 'Versatility & Hand-Drawn Roots',
+    content: (
+      <>
+        <p className="mb-4">
+          My workflow is highly adaptable. Depending on the piece, I might use crisp <strong>flat colors</strong>, sharp{' '}
+          <strong>cel-shading</strong>, or push all the way into that <strong>semi-realistic soft shading</strong> to
+          build deep volumes. Because my rendering style shifts based on the character's needs, some have even wondered
+          if my work is AI-generated.
+        </p>
+        <p>
+          The truth is simply that I love experimenting. Every illustration is <strong>100% hand-drawn</strong> from a
+          blank canvas. To ground my stylized anime proportions, I actively study and rely on{' '}
+          <strong>real-life references</strong> for dynamic poses and complex lighting.
+        </p>
+        <p>
+          I believe in total transparency: while I sometimes use AI tools strictly to brainstorm dynamic poses or
+          generate specific lighting references to study, the actual artwork is <strong>100% hand-drawn</strong>. From
+          the initial sketch on a blank canvas to the final painted brushstroke, there is no AI generation or tracing
+          involved on the canvas itself. It's all about raw digital drafting, studying anatomy, and finding the perfect
+          finish for each piece.
         </p>
       </>
     ),
@@ -25,12 +57,13 @@ const ABOUT_TABS = [
     content: (
       <>
         <p className="mb-4">
-          Beyond the artwork, my actual profession is a Multimedia Engineer. At heart, I am both a designer and a
-          programmer.
+          Beyond the digital canvas, my formal background is in Multimedia Engineering. At heart, I balance both worlds:
+          I am a designer and a programmer.
         </p>
         <p>
-          While I didn't code this website from absolute scratch, I assembled, designed, and programmed this entire
-          digital ecosystem using modern web technologies. I love blending the visual world with logical code!
+          While I didn't write every single line of this website from absolute scratch, I assembled, designed, and
+          customized this entire portfolio ecosystem. I thrive at the intersection of visual creativity and logical
+          code.
         </p>
       </>
     ),
@@ -43,9 +76,7 @@ export default function AboutArtist() {
   const activeContent = ABOUT_TABS.find((t) => t.id === activeTab);
 
   return (
-    // LA SOLUCIÓN ESTÁ AQUÍ: pt-16 (espacio arriba) y pb-28 md:pb-36 (ESPACIO MASIVO ABAJO)
     <section className="w-full max-w-5xl mx-auto md:pb-36 px-4 md:px-8 relative z-10">
-      {/* CAMBIO CLAVE: items-center centra el texto con la imagen, matando el espacio raro */}
       <div className="flex flex-col md:flex-row gap-10 md:gap-16 items-center">
         {/* AVATAR */}
         <div className="w-48 h-48 md:w-64 md:h-64 shrink-0 relative group mx-auto md:mx-0">
