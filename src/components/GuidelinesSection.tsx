@@ -1,18 +1,22 @@
-import { useState, useEffect, useMemo } from 'react';
+import { useState, useEffect } from 'react';
 import { getSheetGuidelines, type GuidelineItem } from '../data/sheets';
 
 export default function GuidelinesSection() {
-  const [items, setItems] = useState<GuidelineItem[]>([]);
+  // Inicializamos el estado ya con la estructura que nos envía sheets.ts
+  const [data, setData] = useState<{ allowed: GuidelineItem[]; restricted: GuidelineItem[] }>({
+    allowed: [],
+    restricted: [],
+  });
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
     getSheetGuidelines()
-      .then((data) => {
-        if (data.length === 0) {
+      .then((result) => {
+        if (result.allowed.length === 0 && result.restricted.length === 0) {
           setError('No data found.');
         }
-        setItems(data);
+        setData(result);
         setLoading(false);
       })
       .catch(() => {
@@ -21,13 +25,12 @@ export default function GuidelinesSection() {
       });
   }, []);
 
-  const allowed = useMemo(() => items.filter((i) => i.type?.toUpperCase().trim() === 'DO'), [items]);
-  const restricted = useMemo(() => items.filter((i) => i.type?.toUpperCase().trim() === 'DONT'), [items]);
-
   if (loading) return <div className="h-40 animate-pulse bg-white/5 rounded-2xl mb-12"></div>;
 
+  // Extraemos directamente de la data masticada, 0 procesamiento
+  const { allowed, restricted } = data;
+
   return (
-    // Quitamos la caja cerrada (bg-[#050000] border-...) para que se integre libre en la página
     <div className="relative mb-12">
       {error && (
         <p className="text-brand-red font-mono text-[10px] mb-8 p-2 border border-brand-red/20 bg-brand-red/5 w-fit uppercase tracking-widest">
@@ -46,7 +49,7 @@ export default function GuidelinesSection() {
           <ul className="space-y-4">
             {allowed.map((item, i) => (
               <li key={i} className="text-brand-light/80 text-sm md:text-base flex gap-4 items-start group">
-                <span className="text-green-500/50 font-bold group-hover:text-green-400 transition-colors">✚</span>
+                <span className="text-green-500/50 font-bold group-hover:text-green-400 transition-colors">✓</span>
                 <span>{item.content}</span>
               </li>
             ))}

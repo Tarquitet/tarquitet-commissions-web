@@ -1,8 +1,5 @@
-// sheets.ts
+// src/data/sheets.ts
 
-// ============================================================================
-// INTERFACES (DEFINICIONES DE DATOS)
-// ============================================================================
 export interface ArtPiece {
   title: string;
   filename: string;
@@ -12,7 +9,6 @@ export interface ArtPiece {
   body_type: string;
   date: string;
 }
-
 export interface PricingTier {
   tier: string;
   original_price: string;
@@ -20,7 +16,6 @@ export interface PricingTier {
   description: string;
   features: string;
 }
-
 export interface TOSItem {
   type: string;
   order: string;
@@ -28,7 +23,6 @@ export interface TOSItem {
   content: string;
   update_date: string;
 }
-
 export interface YCHPiece {
   title: string;
   filename: string;
@@ -36,229 +30,102 @@ export interface YCHPiece {
   body_type: string;
   original_price?: string;
   num_chars?: string;
+  difficult_level?: string;
 }
-
 export interface GuidelineItem {
   type: 'DO' | 'DONT';
   content: string;
 }
 
-export interface DiscountConfig {
-  isActive: boolean;
-  percentage: number;
-  endDate: string;
-}
-
-// ============================================================================
-// CONFIGURACIÓN Y GIDs
-// ============================================================================
 export const GOOGLE_FORM_URL = 'https://forms.gle/QLrFdUaHsva3t8Dg8';
+const APPS_SCRIPT_API_URL =
+  'https://script.google.com/macros/s/AKfycbxAAoOqRdksC0KDrjT7u6plGV3iz75cz5E6Ht_C4efVO8o-iY3sGttFwHye8BC65RNH/exec';
 
-// El ID extraído de tu URL de edición
-const SHEET_ID = '1BJWqRCCR8fXoGahiqDJTna-2DZAV23JRo0YSc3QiY5Y';
+const CACHE_DURATION_MS = 5 * 60 * 1000;
+const fetchCache = new Map<string, Promise<any>>();
 
-const GIDS = {
-  ART: '0',
-  PRICING: '835010888',
-  TOS: '299036177',
-  YCH: '151722103',
-  GUIDELINES: '1007742108',
-  // Si en el futuro necesitas leer la fecha de término del descuento para un Banner,
-  // puedes agregar aquí el GID de tu pestaña CONTROL_MAESTRO:
-  // CONTROL_MAESTRO: 'PONER_GID_AQUI'
-};
-
-// ============================================================================
-// CACHÉ EN MEMORIA
-// ============================================================================
-let artworksCache: Promise<ArtPiece[]> | null = null;
-let pricesCache: Promise<PricingTier[]> | null = null;
-let tosCache: Promise<TOSItem[]> | null = null;
-let ychCache: Promise<YCHPiece[]> | null = null;
-let guidelinesCache: Promise<GuidelineItem[]> | null = null;
-
-// ============================================================================
-// MOTOR DE CONSULTAS SQL (GVIZ)
-// ============================================================================
-async function fetchSheetQuery(gid: string, query: string = 'SELECT *'): Promise<string[][]> {
-  const timestamp = new Date().getTime();
-  // Usamos el endpoint gviz/tq para permitir filtrado SQL y evitar caché vieja
-  const url = `https://docs.google.com/spreadsheets/d/${SHEET_ID}/gviz/tq?tqx=out:csv&gid=${gid}&tq=${encodeURIComponent(query)}&cache_buster=${timestamp}`;
-
-  try {
-    const response = await fetch(url, {
-      cache: 'no-store',
-      headers: { pragma: 'no-cache', 'cache-control': 'no-cache' },
-    });
-
-    if (!response.ok) return [];
-    const text = await response.text();
-    return parseCSV(text);
-  } catch (e) {
-    console.error(`Error en fetch para GID ${gid}:`, e);
-    return [];
-  }
-}
-
-// ============================================================================
-// MOTOR DE LECTURA CSV
-// ============================================================================
-function parseCSV(text: string): string[][] {
-  const result: string[][] = [];
-  let row: string[] = [];
-  let current = '';
-  let inQuotes = false;
-
-  for (let i = 0; i < text.length; i++) {
-    const char = text[i];
-    if (char === '"') {
-      if (inQuotes && text[i + 1] === '"') {
-        current += '"';
-        i++;
-      } else {
-        inQuotes = !inQuotes;
+async function fetchSheetData(sheetName: string): Promise<any[]> {
+  if (typeof window !== 'undefined') {
+    const cachedItem = sessionStorage.getItem(`btc_data_${sheetName}`);
+    if (cachedItem) {
+      try {
+        const { timestamp, data } = JSON.parse(cachedItem);
+        if (Date.now() - timestamp < CACHE_DURATION_MS) {
+          return data;
+        }
+      } catch (e) {
+        sessionStorage.removeItem(`btc_data_${sheetName}`);
       }
-    } else if (char === ',' && !inQuotes) {
-      row.push(current.trim());
-      current = '';
-    } else if (char === '\n' && !inQuotes) {
-      row.push(current.trim());
-      if (row.some((cell) => cell !== '')) result.push(row);
-      row = [];
-      current = '';
-    } else if (char === '\r' && !inQuotes) {
-      // Ignorar
-    } else {
-      current += char;
     }
   }
 
-  if (current !== '' || row.length > 0) {
-    row.push(current.trim());
-    if (row.some((cell) => cell !== '')) result.push(row);
-  }
-  return result;
-}
-
-// ============================================================================
-// FETCHERS
-// ============================================================================
-
-export function getSheetArtworks(limit: number = 50, offset: number = 0): Promise<ArtPiece[]> {
-  if (!artworksCache || offset > 0) {
-    const query = `SELECT A, B, C, D, E, F, G WHERE A IS NOT NULL ORDER BY G DESC LIMIT ${limit} OFFSET ${offset}`;
-    const promise = (async () => {
-      const data = await fetchSheetQuery(GIDS.ART, query);
-      if (data.length < 2) return [];
-      const headers = data[0].map((h) => h.toLowerCase().trim());
-      return data.slice(1).map((row) => {
-        const obj: any = {};
-        headers.forEach((h, i) => {
-          obj[h] = row[i] || '';
-        });
-        return obj as ArtPiece;
-      });
-    })();
-
-    if (offset === 0) artworksCache = promise;
-    return promise;
-  }
-  return artworksCache;
-}
-
-export function getSheetPrices(): Promise<PricingTier[]> {
-  if (!pricesCache) {
-    pricesCache = (async () => {
-      const data = await fetchSheetQuery(GIDS.PRICING, 'SELECT A, B, C, D, E WHERE A IS NOT NULL');
-      if (data.length < 2) return [];
-      const headers = data[0].map((h) => h.toLowerCase().trim());
-      return data.slice(1).map((row) => {
-        const obj: any = {};
-        headers.forEach((h, i) => {
-          obj[h] = row[i] || '';
-        });
-        return obj as PricingTier;
-      });
-    })();
-  }
-  return pricesCache;
-}
-
-export async function getSheetTOS(): Promise<TOSItem[]> {
-  if (!tosCache) {
-    tosCache = (async () => {
-      const url = `https://docs.google.com/spreadsheets/d/${SHEET_ID}/export?format=csv&gid=${GIDS.TOS}&t=${new Date().getTime()}`;
-
-      try {
-        const response = await fetch(url, { cache: 'no-store' });
-        if (!response.ok) return [];
-        const text = await response.text();
-        const data = parseCSV(text);
-
-        if (data.length < 2) return [];
-
-        return data
-          .slice(1)
-          .map((row) => ({
-            type: row[0] || 'I',
-            order: row[1] || '',
-            title: row[2] || '',
-            content: row[3] || '',
-            update_date: row[4] || '',
-          }))
-          .filter((item) => item.title || item.content)
-          .sort((a, b) => {
-            const valA = parseInt(a.order) || 999;
-            const valB = parseInt(b.order) || 999;
-            return valA - valB;
-          });
-      } catch (e) {
-        console.error('Error cargando TOS:', e);
+  if (!fetchCache.has(sheetName)) {
+    const url = `${APPS_SCRIPT_API_URL}?sheet=${sheetName}`;
+    const promise = fetch(url, { cache: 'no-store' })
+      .then((res) => {
+        if (!res.ok) throw new Error(`Error API: ${sheetName}`);
+        return res.json();
+      })
+      .then((data) => {
+        if (data.error) throw new Error(data.error);
+        const finalData = Array.isArray(data) ? data : [];
+        if (typeof window !== 'undefined') {
+          sessionStorage.setItem(`btc_data_${sheetName}`, JSON.stringify({ timestamp: Date.now(), data: finalData }));
+        }
+        return finalData;
+      })
+      .catch((err) => {
+        console.error(`API Error en ${sheetName}:`, err);
         return [];
-      }
-    })();
+      })
+      .finally(() => setTimeout(() => fetchCache.delete(sheetName), 1000));
+
+    fetchCache.set(sheetName, promise);
   }
-  return tosCache;
+  return fetchCache.get(sheetName)!;
 }
 
-export function getSheetYCH(): Promise<YCHPiece[]> {
-  if (!ychCache) {
-    ychCache = (async () => {
-      const data = await fetchSheetQuery(GIDS.YCH, 'SELECT A, B, C, D, E, F WHERE A IS NOT NULL');
-      if (data.length < 2) return [];
-      const headers = data[0].map((h) => h.toLowerCase().trim());
-      return data
-        .slice(1)
-        .map((row) => {
-          const obj: any = {};
-          headers.forEach((h, i) => {
-            obj[h] = row[i] || '';
-          });
-          return obj as YCHPiece;
-        })
-        .filter((item) => item.title && item.filename);
-    })();
-  }
-  return ychCache;
+// ============================================================================
+// FETCHERS MASTICADOS (Optimizados para cada componente)
+// ============================================================================
+
+export async function getSheetArtworks(limit: number = 50, offset: number = 0): Promise<ArtPiece[]> {
+  const data = await fetchSheetData('portfolio');
+  // Ordenado cronológicamente desde aquí
+  return data.sort((a, b) => parseInt(b.date) - parseInt(a.date)).slice(offset, offset + limit);
 }
 
-export function getSheetGuidelines(): Promise<GuidelineItem[]> {
-  if (!guidelinesCache) {
-    guidelinesCache = (async () => {
-      const data = await fetchSheetQuery(GIDS.GUIDELINES, 'SELECT A, B WHERE A IS NOT NULL');
-      if (data.length < 2) return [];
-      const headers = data[0].map((h) => h.toLowerCase().trim());
-      return data.slice(1).map((row) => {
-        const obj: any = {};
-        headers.forEach((h, i) => {
-          obj[h] = row[i] || '';
-        });
-        return obj as GuidelineItem;
-      });
-    })();
-  }
-  return guidelinesCache;
+export async function getSheetPrices(): Promise<PricingTier[]> {
+  const data = await fetchSheetData('prices');
+  return data as PricingTier[];
 }
 
-// Nota: Eliminamos getDiscountConfig() porque apuntaba a la pestaña de Calculadora.
-// Si luego necesitas leer fechas para un banner, puedes reconstruirla apuntando a CONTROL_MAESTRO.
+export async function getSheetTOS(): Promise<{
+  startBlock: TOSItem | null;
+  finalBlock: TOSItem | null;
+  listItems: TOSItem[];
+}> {
+  const tos = await fetchSheetData('tos');
+  return {
+    startBlock: tos.find((t: TOSItem) => t.type === 'S') || null,
+    finalBlock: tos.find((t: TOSItem) => t.type === 'F') || null,
+    listItems: tos.filter((t: TOSItem) => t.type === 'I'),
+  };
+}
+
+export async function getSheetYCH(): Promise<YCHPiece[]> {
+  const ychList = await fetchSheetData('ych');
+  return (ychList as YCHPiece[]).filter((item) => item.title && item.filename);
+}
+
+export async function getSheetGuidelines(): Promise<{
+  allowed: GuidelineItem[];
+  restricted: GuidelineItem[];
+}> {
+  const guidelines = await fetchSheetData('guidelines');
+  const items = guidelines as GuidelineItem[];
+  return {
+    allowed: items.filter((i) => i.type?.toUpperCase().trim() === 'DO'),
+    restricted: items.filter((i) => i.type?.toUpperCase().trim() === 'DONT'),
+  };
+}

@@ -15,8 +15,7 @@ export default function PortfolioGallery() {
   // Carga inicial
   useEffect(() => {
     getSheetArtworks().then((data) => {
-      const sorted = data.sort((a, b) => parseInt(b.date) - parseInt(a.date));
-      setArtworks(sorted);
+      setArtworks(data);
       setLoading(false);
     });
   }, []);

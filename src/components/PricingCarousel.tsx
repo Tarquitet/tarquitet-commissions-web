@@ -40,8 +40,8 @@ export default function PricingCarousel({ tiers, tierExamples }: any) {
         {tiers.map(([tierName, tierItems]: any, index: number) => {
           const rawFeatures = tierItems[0]?.features || '';
           const features = rawFeatures
-            .split(/(?:;|-)/)
-            .map((f: string) => f.trim())
+            .split('\n')
+            .map((f: string) => f.replace(/^-/, '').trim())
             .filter(Boolean);
 
           return (

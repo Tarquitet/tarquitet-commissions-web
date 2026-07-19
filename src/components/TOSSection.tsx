@@ -2,12 +2,20 @@ import { useState, useEffect } from 'react';
 import { getSheetTOS, type TOSItem } from '../data/sheets';
 
 export default function TOSSection() {
-  const [terms, setTerms] = useState<TOSItem[]>([]);
+  const [termsData, setTermsData] = useState<{
+    startBlock: TOSItem | null;
+    finalBlock: TOSItem | null;
+    listItems: TOSItem[];
+  }>({
+    startBlock: null,
+    finalBlock: null,
+    listItems: [],
+  });
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     getSheetTOS().then((data) => {
-      setTerms(data);
+      setTermsData(data);
       setLoading(false);
     });
   }, []);
@@ -42,10 +50,7 @@ export default function TOSSection() {
       </div>
     );
 
-  // Separamos los bloques según la letra en el Sheets
-  const startBlock = terms.find((t) => t.type.toUpperCase() === 'S');
-  const finalBlock = terms.find((t) => t.type.toUpperCase() === 'F');
-  const listItems = terms.filter((t) => t.type.toUpperCase() === 'I');
+  const { startBlock, finalBlock, listItems } = termsData;
 
   return (
     <div className="max-w-5xl mx-auto flex flex-col">
@@ -57,7 +62,6 @@ export default function TOSSection() {
               {startBlock.title}
             </h2>
           </div>
-
           <div className="bg-brand-red/5 border border-brand-red/20 p-8 rounded-2xl relative overflow-hidden">
             <div className="absolute top-0 right-0 w-32 h-32 bg-brand-red/5 blur-3xl rounded-full pointer-events-none"></div>
             <div
@@ -84,7 +88,7 @@ export default function TOSSection() {
                   {item.title}
                 </span>
               </div>
-              <div className="text-brand-red/40 group-open:text-brand-red group-open:rotate-180 transition-all duration-500 flex-shrink-0 ml-4">
+              <div className="text-brand-red/40 group-open:text-brand-red group-open:rotate-180 transition-all duration-500 shrink-0 ml-4">
                 <svg
                   xmlns="http://www.w3.org/2000/svg"
                   width="24"
@@ -100,7 +104,6 @@ export default function TOSSection() {
                 </svg>
               </div>
             </summary>
-
             <div className="px-6 md:px-12 pb-10 border-t border-brand-red/5 pt-8 shadow-inner">
               <div
                 className="text-brand-light/70 text-sm leading-relaxed"
