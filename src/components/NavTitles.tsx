@@ -1,7 +1,6 @@
 import { sections } from '../data/sections';
 import { contentES, contentEN } from '../data/content';
 
-// Recibimos currentLang directamente desde Astro (cero parpadeo)
 export default function NavTitles({ activeSection, currentLang }: { activeSection: string; currentLang: 'es' | 'en' }) {
   const content = currentLang === 'en' ? contentEN : contentES;
 
@@ -10,7 +9,6 @@ export default function NavTitles({ activeSection, currentLang }: { activeSectio
   const nextSection = currentIndex < sections.length - 1 ? sections[currentIndex + 1] : null;
   const currentSection = sections[currentIndex];
 
-  // ✅ Generar ruta con prefijo de idioma si es necesario
   const getHref = (sectionId: string) => {
     const base = currentLang === 'en' ? `/en/${sectionId}` : `/${sectionId}`;
     return base;

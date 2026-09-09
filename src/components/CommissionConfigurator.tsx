@@ -129,7 +129,7 @@ export default function CommissionGallery() {
                 containerClass="w-full h-full"
               />
               <div className="absolute inset-0 bg-black/60 opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex flex-col justify-end p-4">
-                <p className="text-beige font-black text-sm uppercase tracking-tighter">{item.title}</p>
+                <p className="text-white font-black text-sm uppercase tracking-tighter">{item.title}</p>
                 <p className="text-brand-red text-xs font-mono">
                   {item.thumbnail.date} • {CATEGORY_LABELS[item.thumbnail.category]} • {item.thumbnail.body_type}
                 </p>

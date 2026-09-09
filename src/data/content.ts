@@ -220,12 +220,10 @@ export const contentEN: SiteContent = {
 };
 
 // ============================================================================
-// 3. EXPORTACIÓN SEGURA PARA REACT (EVITA EL ERROR SSR)
+// 3. EXPORTACIÓN SEGURA PARA REACT (LEYENDO LA URL)
 // ============================================================================
-// ============================================================================
-// 3. EXPORTACIÓN SEGURA PARA REACT (EVITA EL ERROR SSR)
-// ============================================================================
-// En el servidor (Astro), 'window' no existe, así que usa Español por defecto.
-// En el cliente (navegador), lee el localStorage para mantener la preferencia del usuario.
-export const content: SiteContent =
-  typeof window !== 'undefined' ? (localStorage.getItem('lang') === 'en' ? contentEN : contentES) : contentES;
+
+// ✅ FIX: Leemos la URL directamente en lugar de localStorage
+const currentLang = typeof window !== 'undefined' ? (window.location.pathname.startsWith('/en') ? 'en' : 'es') : 'es';
+
+export const content: SiteContent = currentLang === 'en' ? contentEN : contentES;

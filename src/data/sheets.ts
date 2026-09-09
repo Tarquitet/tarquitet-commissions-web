@@ -51,12 +51,12 @@ const cache: Record<string, any> = {};
 const CACHE_DURATION_MS = 15 * 60 * 1000; // 15 minutos
 const cacheTimestamps: Record<string, number> = {};
 
-// Helper para obtener el idioma actual de forma segura (Cliente vs Servidor)
+// ✅ AHORA (Lee la URL directamente, igual que el Layout y el content.ts)
 const getCurrentLang = (): 'es' | 'en' => {
   if (typeof window !== 'undefined') {
-    return (localStorage.getItem('lang') as 'es' | 'en') || 'es';
+    return window.location.pathname.startsWith('/en') ? 'en' : 'es';
   }
-  return 'es'; // Fallback por defecto para SSR (Astro)
+  return 'es';
 };
 
 // ✅ FUNCIÓN ACTUALIZADA: Ahora acepta el parámetro 'isLocalized'

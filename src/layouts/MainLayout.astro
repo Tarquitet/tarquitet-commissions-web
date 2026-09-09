@@ -5,8 +5,9 @@ import { sections } from '../data/sections';
 import HeaderControls from '../components/HeaderControls.tsx';
 import NavTitles from '../components/NavTitles.tsx';
 
-// ✅ Astro detecta el idioma automáticamente por la URL (/en/... o /...)
-const lang = Astro.currentLocale as 'es' | 'en';
+// Detectar idioma de la URL
+const isEnglish = Astro.url.pathname.startsWith('/en');
+const lang = isEnglish ? 'en' : 'es';
 const content = lang === 'en' ? contentEN : contentES;
 
 const { title, activeSection } = Astro.props as { title: string; activeSection: string };
@@ -30,8 +31,8 @@ const { title, activeSection } = Astro.props as { title: string; activeSection: 
   </head>
   <body class="bg-[var(--bg-color)] text-[var(--text-color)] transition-colors duration-300">
     
-    <!-- Le pasamos el idioma detectado por Astro -->
-    <HeaderControls client:load currentLang={lang} />
+    <!-- Sin props, el componente detecta el idioma solo -->
+    <HeaderControls client:load />
 
     {activeSection !== 'home' && (
       <NavTitles client:load activeSection={activeSection} currentLang={lang} />

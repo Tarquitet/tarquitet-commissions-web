@@ -1,18 +1,18 @@
 ---
 import { contentES, contentEN } from '../data/content';
 
-const lang = Astro.url.searchParams.get('lang') === 'en' ? 'en' : 'es';
-const content = lang === 'en' ? contentEN : contentES;
+// Detectar idioma desde la ruta
+const isEnglish = Astro.url.pathname.startsWith('/en');
+const content = isEnglish ? contentEN : contentES;
 
-// Enlace dinámico según el idioma
-const nextHref = lang === 'en' ? '/about?lang=en' : '/about';
+const nextHref = isEnglish ? '/en/about' : '/about';
 ---
 
 <section class="relative w-screen h-screen flex flex-col items-center justify-center overflow-hidden bg-[var(--bg-color)] transition-colors duration-300">
   
   <div class="relative z-10 flex flex-col items-center w-full max-w-4xl px-8">
     
-    <!-- ZONA VISUAL: Imagen o Texto Fallback -->
+    <!-- ZONA VISUAL -->
     <div class="relative w-full max-w-md md:max-w-lg mx-auto mb-12 z-20 flex items-center justify-center min-h-[300px]">
       <img 
         src="/character2.jpg" 
@@ -31,7 +31,7 @@ const nextHref = lang === 'en' ? '/about?lang=en' : '/about';
       </div>
     </div>
 
-    <!-- Botón que lleva a la página About -->
+    <!-- Botón que lleva a About -->
     <a 
       href={nextHref}
       class="relative z-10 inline-flex items-center justify-center w-14 h-14 rounded-full border-2 border-brand-red text-brand-red hover:bg-brand-red hover:text-[var(--bg-color)] transition-all duration-300 shadow-lg animate-bounce"

@@ -1,12 +1,17 @@
 import { useState, useEffect } from 'react';
 
-interface HeaderControlsProps {
-  currentLang: 'es' | 'en';
-}
-
-export default function HeaderControls({ currentLang }: HeaderControlsProps) {
+export default function HeaderControls() {
   const [theme, setTheme] = useState<'light' | 'dark'>('light');
-  const [lang, setLang] = useState<'es' | 'en'>(currentLang);
+
+  // Detectar idioma DIRECTAMENTE de la URL (no de props)
+  const getLangFromUrl = (): 'es' | 'en' => {
+    if (typeof window !== 'undefined') {
+      return window.location.pathname.startsWith('/en') ? 'en' : 'es';
+    }
+    return 'es';
+  };
+
+  const [lang, setLang] = useState<'es' | 'en'>(getLangFromUrl());
 
   useEffect(() => {
     const savedTheme = (localStorage.getItem('theme') as 'light' | 'dark') || 'light';
@@ -23,23 +28,22 @@ export default function HeaderControls({ currentLang }: HeaderControlsProps) {
 
   const toggleLang = () => {
     const newLang = lang === 'es' ? 'en' : 'es';
-    setLang(newLang);
-    localStorage.setItem('lang', newLang);
-
     const path = window.location.pathname;
-    let newPath = path;
 
+    let newPath: string;
     if (newLang === 'en') {
-      newPath = path.startsWith('/en') ? path : `/en${path === '/' ? '' : path}`;
+      // Agregar /en si no está
+      newPath = path.startsWith('/en') ? path : `/en${path}`;
     } else {
+      // Quitar /en si está
       newPath = path.replace(/^\/en/, '') || '/';
     }
 
+    console.log('Cambiando idioma a:', newLang, 'Nueva ruta:', newPath); // DEBUG
     window.location.href = newPath;
   };
 
   const goHome = () => {
-    // Ir al home respetando el idioma actual
     const homePath = lang === 'en' ? '/en' : '/';
     window.location.href = homePath;
   };
