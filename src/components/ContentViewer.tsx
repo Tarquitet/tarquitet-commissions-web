@@ -1,86 +1,65 @@
-import { useState, useRef, useEffect } from 'react';
+import { useState } from 'react';
 import { sections } from '../data/sections';
-import { content } from '../data/content'; // <-- Importamos content
+import { content } from '../data/content';
 
 export default function ContentViewer() {
   const [currentIndex, setCurrentIndex] = useState(0);
-  const [sliderStyle, setSliderStyle] = useState({ left: '0px', width: '0px' });
-  const containerRef = useRef<HTMLDivElement>(null);
-  const titleRefs = useRef<(HTMLButtonElement | null)[]>([]);
-
-  useEffect(() => {
-    const updateSlider = () => {
-      const activeBtn = titleRefs.current[currentIndex];
-      const container = containerRef.current;
-
-      if (activeBtn && container) {
-        const containerRect = container.getBoundingClientRect();
-        const btnRect = activeBtn.getBoundingClientRect();
-
-        setSliderStyle({
-          left: `${btnRect.left - containerRect.left}px`,
-          width: `${btnRect.width}px`,
-        });
-      }
-    };
-
-    updateSlider();
-    const timeout = setTimeout(updateSlider, 100);
-
-    window.addEventListener('resize', updateSlider);
-    return () => {
-      clearTimeout(timeout);
-      window.removeEventListener('resize', updateSlider);
-    };
-  }, [currentIndex]);
 
   const CurrentComponent = sections[currentIndex].component;
 
+  // Obtener los 3 títulos visibles: anterior, actual, siguiente
+  const getVisibleSections = () => {
+    const prev = currentIndex > 0 ? sections[currentIndex - 1] : null;
+    const current = sections[currentIndex];
+    const next = currentIndex < sections.length - 1 ? sections[currentIndex + 1] : null;
+
+    return { prev, current, next };
+  };
+
+  const { prev, current, next } = getVisibleSections();
+
   return (
     <div className="relative w-full max-w-7xl mx-auto px-4 py-12 flex flex-col items-center justify-center min-h-[70vh]">
-      {/* Barra de títulos con slider */}
-      <div
-        ref={containerRef}
-        className="relative flex items-center justify-center gap-6 md:gap-12 mb-12 w-full overflow-x-auto overflow-y-visible scrollbar-hide py-6"
-      >
-        {/* Barra deslizadora animada */}
-        <div
-          className="absolute bottom-0 h-1 bg-brand-red rounded-full transition-all duration-500 ease-out"
-          style={{
-            left: sliderStyle.left,
-            width: sliderStyle.width,
-          }}
-        />
+      {/* CARRUSEL DE 3 TÍTULOS */}
+      <div className="flex items-center justify-center gap-8 md:gap-16 mb-12 w-full">
+        {/* TÍTULO ANTERIOR (Izquierda) */}
+        {prev ? (
+          <button
+            onClick={() => setCurrentIndex(currentIndex - 1)}
+            className="text-xl md:text-2xl font-black uppercase tracking-tighter text-text/20 hover:text-text/40 transition-all duration-300 border-b-4 border-text/20"
+          >
+            {content.sections[prev.id].title}
+          </button>
+        ) : (
+          <div className="w-32 md:w-48" /> // Espacio vacío si no hay anterior
+        )}
 
-        {sections.map((section, idx) => {
-          const isActive = idx === currentIndex;
+        {/* TÍTULO ACTUAL (Centro) */}
+        <button
+          onClick={() => setCurrentIndex(currentIndex)}
+          className="text-4xl md:text-6xl font-black uppercase tracking-tighter text-brand-red border-b-4 border-brand-red transition-all duration-300"
+        >
+          {content.sections[current.id].title}
+        </button>
 
-          // OBTENER TÍTULO TRADUCIDO DINÁMICAMENTE
-          const title = content.sections[section.id].title;
-
-          return (
-            <button
-              key={section.id}
-              ref={(el) => {
-                titleRefs.current[idx] = el;
-              }}
-              onClick={() => setCurrentIndex(idx)}
-              className={`whitespace-nowrap font-black uppercase tracking-tighter transition-all duration-300 ${
-                isActive
-                  ? 'text-4xl md:text-6xl text-brand-red scale-100'
-                  : 'text-xl md:text-2xl text-text/30 hover:text-text/60 scale-90'
-              }`}
-            >
-              {title}
-            </button>
-          );
-        })}
+        {/* TÍTULO SIGUIENTE (Derecha) */}
+        {next ? (
+          <button
+            onClick={() => setCurrentIndex(currentIndex + 1)}
+            className="text-xl md:text-2xl font-black uppercase tracking-tighter text-text/20 hover:text-text/40 transition-all duration-300 border-b-4 border-text/20"
+          >
+            {content.sections[next.id].title}
+          </button>
+        ) : (
+          <div className="w-32 md:w-48" /> // Espacio vacío si no hay siguiente
+        )}
       </div>
 
       {/* Contenido Central */}
-      <div className="flex-1 w-full transition-all duration-500 ease-in-out">
+      <div className="flex-1 w-full">
         <div
-          className="rounded-2xl p-6 md:p-10 shadow-lg border-2"
+          key={currentIndex}
+          className="rounded-2xl p-6 md:p-10 shadow-lg border-2 animate-fade-in"
           style={{
             backgroundColor: 'var(--card-bg)',
             borderColor: 'var(--card-border)',
@@ -89,6 +68,16 @@ export default function ContentViewer() {
           <CurrentComponent />
         </div>
       </div>
+
+      <style>{`
+        @keyframes fadeIn {
+          from { opacity: 0; transform: translateY(10px); }
+          to { opacity: 1; transform: translateY(0); }
+        }
+        .animate-fade-in {
+          animation: fadeIn 0.4s ease-out forwards;
+        }
+      `}</style>
     </div>
   );
 }

@@ -30,6 +30,7 @@ export interface SiteContent {
         whatIncludes: string;
         requestButton: string;
         noFeatures: string;
+        ctaMessage: string;
       };
     };
     scope: {
@@ -105,6 +106,7 @@ export const contentES: SiteContent = {
         whatIncludes: '¿Qué incluye?',
         requestButton: 'Solicitar esta comisión',
         noFeatures: 'Detalles estándar',
+        ctaMessage: 'Si te interesa este estilo, puedes solicitar tu comisión directamente en la sección de Contacto.',
       },
     },
     scope: {
@@ -182,6 +184,8 @@ export const contentEN: SiteContent = {
         whatIncludes: 'What includes?',
         requestButton: 'Request this commission',
         noFeatures: 'Standard details',
+        ctaMessage:
+          'If you are interested in this style, you can request your commission directly in the Contact section.',
       },
     },
     scope: {
