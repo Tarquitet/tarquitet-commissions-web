@@ -3,15 +3,8 @@ import { useState, useEffect } from 'react';
 export default function HeaderControls() {
   const [theme, setTheme] = useState<'light' | 'dark'>('light');
 
-  // Detectar idioma DIRECTAMENTE de la URL (no de props)
-  const getLangFromUrl = (): 'es' | 'en' => {
-    if (typeof window !== 'undefined') {
-      return window.location.pathname.startsWith('/en') ? 'en' : 'es';
-    }
-    return 'es';
-  };
-
-  const [lang, setLang] = useState<'es' | 'en'>(getLangFromUrl());
+  const lang: 'es' | 'en' =
+    typeof window !== 'undefined' ? (window.location.pathname.startsWith('/en') ? 'en' : 'es') : 'es';
 
   useEffect(() => {
     const savedTheme = (localStorage.getItem('theme') as 'light' | 'dark') || 'light';
@@ -27,29 +20,31 @@ export default function HeaderControls() {
   };
 
   const toggleLang = () => {
-    const newLang = lang === 'es' ? 'en' : 'es';
     const path = window.location.pathname;
-
     let newPath: string;
-    if (newLang === 'en') {
-      // Agregar /en si no está
-      newPath = path.startsWith('/en') ? path : `/en${path}`;
+
+    if (lang === 'es') {
+      newPath = path.startsWith('/en') ? path : `/en${path === '/' ? '' : path}`;
     } else {
-      // Quitar /en si está
       newPath = path.replace(/^\/en/, '') || '/';
     }
 
-    console.log('Cambiando idioma a:', newLang, 'Nueva ruta:', newPath); // DEBUG
     window.location.href = newPath;
   };
 
   const goHome = () => {
-    const homePath = lang === 'en' ? '/en' : '/';
-    window.location.href = homePath;
+    window.location.href = lang === 'en' ? '/en' : '/';
   };
 
   return (
-    <div className="fixed top-6 right-6 z-[9999] flex gap-3">
+    // ✅ CAMBIO: Posición responsiva
+    // Escritorio (md+): arriba a la derecha
+    // Móvil (<md): abajo al centro
+    <div
+      className="fixed z-[9999] flex gap-3 
+                    md:top-6 md:right-6 
+                    bottom-6 left-1/2 -translate-x-1/2 md:left-auto md:translate-x-0 md:bottom-auto"
+    >
       {/* Botón HOME */}
       <button
         type="button"
@@ -94,7 +89,7 @@ export default function HeaderControls() {
               strokeLinejoin="round"
               strokeWidth="2"
               d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z"
-            ></path>
+            />
           </svg>
         ) : (
           <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -103,7 +98,7 @@ export default function HeaderControls() {
               strokeLinejoin="round"
               strokeWidth="2"
               d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z"
-            ></path>
+            />
           </svg>
         )}
       </button>
