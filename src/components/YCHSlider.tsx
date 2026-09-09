@@ -1,6 +1,6 @@
 import { useState, useEffect, memo, useRef } from 'react';
 import { getSheetYCH, getSheetPrices, type YCHPiece, type PricingTier } from '../data/sheets';
-import SecurityWatermark from './SecurityWatermark';
+import SecurityWatermark from './unused/SecurityWatermark';
 import { formatHumanTitle, preventActions, getImagePath } from '../utils/formatters';
 import FadeImage from './FadeImage';
 

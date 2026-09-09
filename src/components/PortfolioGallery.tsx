@@ -1,6 +1,6 @@
 import { useState, useMemo, useEffect, useRef, memo } from 'react';
 import { getSheetArtworks, type ArtPiece } from '../data/sheets';
-import SecurityWatermark from './SecurityWatermark';
+import SecurityWatermark from './unused/SecurityWatermark';
 import { formatHumanTitle, getImagePath } from '../utils/formatters';
 import FadeImage from './FadeImage';
 

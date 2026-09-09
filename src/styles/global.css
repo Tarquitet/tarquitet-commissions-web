@@ -1,30 +1,66 @@
 @import 'tailwindcss';
 
-@theme {
-  --color-brand-red: #dc2626;
-  --color-brand-darkred: #991b1b;
-  --color-brand-black: #0d0d0d;
-  --color-brand-gray: #1f2937;
-  --color-brand-light: #f3f4f6;
+/* ============================================================================
+   VARIABLES CSS PARA TEMAS CLARO Y OSCURO
+   ============================================================================ */
+
+/* TEMA CLARO (default) */
+:root,
+[data-theme='light'] {
+  --bg-color: #f5f1e8; /* beige claro */
+  --bg-dark: #e8dcc4; /* beige más oscuro */
+  --text-color: #2c2c2c; /* texto oscuro */
+  --text-muted: rgba(44, 44, 44, 0.6);
+  --card-bg: rgba(232, 220, 196, 0.4); /* beige-dark/40 */
+  --card-border: rgba(220, 38, 38, 0.2);
+  --brand-red: #dc2626;
 }
 
-/* COMPORTAMIENTO DE SCROLL SUAVE PARA EL MENÚ */
-html {
-  scroll-behavior: smooth;
+/* TEMA OSCURO */
+[data-theme='dark'] {
+  --bg-color: #1a1a1a; /* gris muy oscuro */
+  --bg-dark: #2a2a2a; /* gris oscuro */
+  --text-color: #f5f1e8; /* beige claro para texto */
+  --text-muted: rgba(245, 241, 232, 0.7);
+  --card-bg: rgba(40, 40, 40, 0.7); /* gris oscuro semitransparente */
+  --card-border: rgba(220, 38, 38, 0.5); /* rojo más visible */
+  --brand-red: #dc2626;
 }
 
-/* CLASES PARA ANIMACIÓN AL HACER SCROLL (Scroll Reveal) */
-.reveal-on-scroll {
-  opacity: 0;
-  transform: translateY(40px);
-  /* Quitamos el will-change que causaba el bug permanente */
+/* Aplicar variables al body */
+body {
+  background-color: var(--bg-color);
+  color: var(--text-color);
   transition:
-    opacity 1s cubic-bezier(0.25, 0.46, 0.45, 0.94),
-    transform 1s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+    background-color 0.3s ease,
+    color 0.3s ease;
 }
 
-.reveal-on-scroll.is-visible {
-  opacity: 1;
-  /* MAGIA: 'none' destruye la caja invisible y libera el modal a pantalla completa */
-  transform: none;
+/* Ocultar scrollbar del navegador en todos los navegadores */
+html,
+body {
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+}
+
+html::-webkit-scrollbar,
+body::-webkit-scrollbar {
+  display: none;
+}
+
+/* Utilidades de Tailwind custom */
+.bg-beige {
+  background-color: var(--bg-color);
+}
+.bg-beige-dark {
+  background-color: var(--bg-dark);
+}
+.text-brand-red {
+  color: var(--brand-red);
+}
+.bg-brand-red {
+  background-color: var(--brand-red);
+}
+.text-text {
+  color: var(--text-color);
 }

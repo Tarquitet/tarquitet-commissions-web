@@ -1,0 +1,50 @@
+---
+import { contentES, contentEN } from '../data/content';
+import HeaderControls from './HeaderControls.tsx';
+
+const lang = Astro.url.searchParams.get('lang') === 'en' ? 'en' : 'es';
+const content = lang === 'en' ? contentEN : contentES;
+---
+
+<!-- Usamos var(--bg-color) para que el fondo cambie con el tema -->
+<section class="relative w-screen h-screen flex flex-col items-center justify-center overflow-hidden bg-[var(--bg-color)] transition-colors duration-300">
+  
+  <!-- Controles (Tema e Idioma) -->
+  <HeaderControls client:load currentLang={lang} />
+  
+  <div class="relative z-10 flex flex-col items-center w-full max-w-4xl px-8">
+    
+    <!-- ZONA VISUAL: Imagen o Texto Fallback -->
+    <div class="relative w-full max-w-md md:max-w-lg mx-auto mb-12 z-20 flex items-center justify-center min-h-[300px]">
+      
+      <img 
+        src="/character2.jpg" 
+        alt={content.hero.name} 
+        class="w-full h-auto object-contain drop-shadow-2xl"
+        onerror="this.style.display='none'; document.getElementById('hero-fallback').style.display='flex';"
+      />
+      
+      <!-- Fallback: Solo aparece si la imagen no carga -->
+      <div id="hero-fallback" style="display: none;" class="flex flex-col items-center gap-2 animate-in fade-in zoom-in duration-500">
+        <p class="text-2xl md:text-3xl font-black uppercase tracking-widest text-brand-red">
+          {content.hero.greeting}
+        </p>
+        <h1 class="text-6xl md:text-8xl font-black uppercase tracking-tighter text-brand-red text-center break-words drop-shadow-lg">
+          {content.hero.name}
+        </h1>
+      </div>
+    </div>
+
+    <!-- Botón Scroll Down (Se adapta al tema) -->
+    <a 
+      href="#main-content" 
+      class="relative z-10 inline-flex items-center justify-center w-14 h-14 rounded-full border-2 border-brand-red text-brand-red hover:bg-brand-red hover:text-[var(--bg-color)] transition-all duration-300 shadow-lg animate-bounce"
+      aria-label="Scroll down"
+    >
+      <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 14l-7 7m0 0l-7-7m7 7V3"></path>
+      </svg>
+    </a>
+
+  </div>
+</section>

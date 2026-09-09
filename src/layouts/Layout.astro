@@ -59,13 +59,9 @@ const socialImageURL = new URL(image, siteURL);
         <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;700;900&family=JetBrains+Mono:wght@400;700&display=swap" rel="stylesheet">
     </head>
     <body class="min-h-screen flex flex-col font-sans antialiased overflow-x-hidden">
-        <Header />
-
         <main class="grow">
             <slot />
         </main>
-        
-        <Footer />
         
         <script>
             document.addEventListener('DOMContentLoaded', () => {

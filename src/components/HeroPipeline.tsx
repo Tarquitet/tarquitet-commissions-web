@@ -1,6 +1,6 @@
 import { useState, useEffect, useRef, memo } from 'react';
 import { getSheetArtworks } from '../data/sheets';
-import SecurityWatermark from './SecurityWatermark';
+import SecurityWatermark from './unused/SecurityWatermark';
 import { getImagePath } from '../utils/formatters';
 import FadeImage from './FadeImage';
 import React from 'react';
@@ -158,8 +158,7 @@ const HeroCard = memo(({ index, currentStep, src }: { index: number; currentStep
         zIndex,
         opacity,
         transform: `translate(${x}px, ${y}px) rotate(${t.rot}deg) scale(${scale})`,
-        transition: 'all 1.2s cubic-bezier(0.215, 0.61, 0.355, 1)',
-        willChange: 'transform, opacity',
+        transition: 'transform 1.2s cubic-bezier(0.215, 0.61, 0.355, 1), opacity 1.2s ease',
       }}
     >
       <FadeImage

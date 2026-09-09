@@ -1,0 +1,121 @@
+@import 'tailwindcss';
+
+@theme {
+  --color-brand-red: #dc2626;
+  --color-brand-darkred: #991b1b;
+  --color-brand-black: #0d0d0d;
+  --color-brand-gray: #1f2937;
+  --color-brand-light: #f3f4f6;
+
+  /* Paleta Bauhaus */
+  --color-beige: #f5f1e8;
+  --color-beige-dark: #e8dcc4;
+  --color-gray-bauhaus: #2c2c2c;
+  --color-gray-light: #4a4a4a;
+  --color-accent: #d62828;
+}
+
+/* ==========================================================================
+   SISTEMA DE TEMAS (Claro/Oscuro)
+   ========================================================================== */
+
+:root {
+  /* Variables por defecto (tema oscuro) */
+  --background: var(--color-gray-bauhaus);
+  --text: var(--color-beige);
+  --accent: var(--color-accent);
+  --border: rgba(245, 241, 232, 0.1);
+}
+
+[data-theme='light'] {
+  --background: var(--color-beige);
+  --text: var(--color-gray-bauhaus);
+  --accent: var(--color-accent);
+  --border: rgba(44, 44, 44, 0.1);
+}
+
+[data-theme='dark'] {
+  --background: var(--color-gray-bauhaus);
+  --text: var(--color-beige);
+  --accent: var(--color-accent);
+  --border: rgba(245, 241, 232, 0.1);
+}
+
+/* Transición suave entre temas */
+* {
+  transition:
+    background-color 0.5s ease,
+    color 0.5s ease,
+    border-color 0.5s ease;
+}
+
+/* ==========================================================================
+   CLASES DE UTILIDAD PARA TEMAS
+   ========================================================================== */
+
+body {
+  background-color: var(--background);
+  color: var(--text);
+}
+
+.bg-theme {
+  background-color: var(--background);
+}
+
+.text-theme {
+  color: var(--text);
+}
+
+.border-theme {
+  border-color: var(--border);
+}
+
+.text-brand-accent {
+  color: var(--accent);
+}
+
+.bg-brand-accent {
+  background-color: var(--accent);
+}
+
+.text-background {
+  color: var(--background);
+}
+
+/* ==========================================================================
+   SCROLLBAR OCULTO (Para Hero Horizontal)
+   ========================================================================== */
+
+.scrollbar-hide::-webkit-scrollbar {
+  display: none;
+}
+
+.scrollbar-hide {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+
+/* ==========================================================================
+   COMPORTAMIENTO DE SCROLL SUAVE PARA EL MENÚ
+   ========================================================================== */
+
+html {
+  scroll-behavior: smooth;
+}
+
+/* ==========================================================================
+   CLASES PARA ANIMACIÓN AL HACER SCROLL (Scroll Reveal)
+   ========================================================================== */
+
+.reveal-on-scroll {
+  opacity: 0;
+  transform: translateY(40px);
+  transition:
+    opacity 1s cubic-bezier(0.25, 0.46, 0.45, 0.94),
+    transform 1s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+}
+
+.reveal-on-scroll.is-visible {
+  opacity: 1;
+  transform: none;
+}
