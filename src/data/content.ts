@@ -91,13 +91,13 @@ export const contentES: SiteContent = {
       engineerContent:
         'Más allá del lienzo digital, mi formación formal es en Ingeniería Multimedia. En el fondo, equilibro ambos mundos: soy diseñador y programador. Prospero en la intersección de la creatividad visual y la lógica del código.',
       engineerLink: {
-        text: 'Revisa mis proyectos profesionales →',
+        text: 'Revisa mis proyectos profesionales',
         url: 'https://tarquitet.com',
       },
     },
     commissions: {
       title: 'Comisiones',
-      customButton: 'Comisiones Personalizadas',
+      customButton: 'Arte Personalizado',
       ychButton: 'YCH / Poses',
       ychPlaceholder: 'Sección YCH en desarrollo. Aquí se mostrarán las poses pre-hechas disponibles.',
       loadingText: '// Cargando portafolio...',
@@ -169,13 +169,13 @@ export const contentEN: SiteContent = {
       engineerContent:
         'Beyond the digital canvas, my formal background is in Multimedia Engineering. At heart, I balance both worlds: I am a designer and a programmer. I thrive at the intersection of visual creativity and logical code.',
       engineerLink: {
-        text: 'Check out my professional projects →',
+        text: 'Check out my professional projects',
         url: 'https://tarquitet.com',
       },
     },
     commissions: {
       title: 'Commissions',
-      customButton: 'Custom Commissions',
+      customButton: 'Custom Art',
       ychButton: 'YCH / Poses',
       ychPlaceholder: 'YCH section in development. Here will be shown the available pre-made poses.',
       loadingText: '// Loading portfolio...',
@@ -219,6 +219,9 @@ export const contentEN: SiteContent = {
   },
 };
 
+// ============================================================================
+// 3. EXPORTACIÓN SEGURA PARA REACT (EVITA EL ERROR SSR)
+// ============================================================================
 // ============================================================================
 // 3. EXPORTACIÓN SEGURA PARA REACT (EVITA EL ERROR SSR)
 // ============================================================================

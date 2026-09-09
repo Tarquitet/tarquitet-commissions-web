@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { createPortal } from 'react-dom'; // <-- 1. IMPORTAMOS EL PORTAL
 import { content } from '../data/content';
 import type { ArtPiece } from '../data/sheets';
 import { getImagePath } from '../utils/formatters';
@@ -38,7 +39,6 @@ interface ArtModalProps {
 export default function ArtModal({ selectedGroup, currentView, prices, onClose, onViewChange }: ArtModalProps) {
   const [expandedFeatures, setExpandedFeatures] = useState<string | null>(null);
 
-  // OBTENER PRECIO: busca por tier + body_type (matriz exacta)
   const getPriceForVersion = (targetCategory: string, bodyType: string) => {
     const normTier = normalizeCategory(targetCategory);
     const normDesc = normalizeBodyType(bodyType);
@@ -56,17 +56,12 @@ export default function ArtModal({ selectedGroup, currentView, prices, onClose, 
     return { original, discount, showDiscount };
   };
 
-  // OBTENER FEATURES: busca SOLO por tier (independiente del body_type)
-  // Usa portrait como fuente principal porque suele tener los features completos
   const getFeaturesForTier = (targetCategory: string) => {
     const normTier = normalizeCategory(targetCategory);
-
-    // Primero buscar en portrait (que tiene los features detallados)
     let priceMatch = prices.find(
       (p) => normalizeCategory(p.tier) === normTier && p.description?.toLowerCase() === 'portrait',
     );
 
-    // Si no hay o está vacío, buscar en cualquier descripción que tenga features
     if (!priceMatch || !priceMatch.features || priceMatch.features.trim() === '') {
       priceMatch = prices.find((p) => normalizeCategory(p.tier) === normTier && p.features && p.features.trim() !== '');
     }
@@ -96,13 +91,13 @@ export default function ArtModal({ selectedGroup, currentView, prices, onClose, 
 
   if (!selectedGroup || !currentView) return null;
 
-  // Precio exacto para la versión actual
   const priceData = getPriceForVersion(currentView.category, currentView.body_type);
-  // Features del tier (independiente del body_type)
   const features = getFeaturesForTier(currentView.category);
 
-  return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/85" onClick={onClose}>
+  // 2. DEFINIMOS EL CONTENIDO DEL MODAL
+  const modalContent = (
+    // 3. SUBIMOS EL Z-INDEX A 9999 PARA ASEGURAR QUE TAPE TODO
+    <div className="fixed inset-0 z-[9999] flex items-center justify-center p-4 bg-black/85" onClick={onClose}>
       <div
         className="relative w-full max-w-6xl bg-beige rounded-2xl overflow-hidden shadow-2xl max-h-[95vh] flex flex-col md:flex-row"
         onClick={(e) => e.stopPropagation()}
@@ -116,7 +111,7 @@ export default function ArtModal({ selectedGroup, currentView, prices, onClose, 
           </svg>
         </button>
 
-        {/* CONTENEDOR DE IMÁGENES (TAMAÑO NATURAL + CROSSFADE) */}
+        {/* CONTENEDOR DE IMÁGENES (SIN ALTURA FIJA + CROSSFADE) */}
         <div className="w-full md:w-3/5 bg-black flex items-center justify-center relative p-4">
           {selectedGroup.map((art) => {
             const isActive = art.filename === currentView.filename;
@@ -133,7 +128,6 @@ export default function ArtModal({ selectedGroup, currentView, prices, onClose, 
           })}
         </div>
 
-        {/* PANEL DE INFORMACIÓN */}
         <div className="w-full md:w-2/5 p-6 md:p-8 flex flex-col bg-beige overflow-y-auto">
           <div className="space-y-6">
             <div>
@@ -145,7 +139,6 @@ export default function ArtModal({ selectedGroup, currentView, prices, onClose, 
               </p>
             </div>
 
-            {/* 1. BOTONES COMPACTOS DE SELECCIÓN */}
             <div>
               <p className="text-text/60 text-xs uppercase tracking-widest font-bold mb-3">
                 {content.sections.commissions.modal.versionsTitle}
@@ -179,7 +172,6 @@ export default function ArtModal({ selectedGroup, currentView, prices, onClose, 
               </div>
             </div>
 
-            {/* 2. BLOQUE DE PRECIO */}
             <div className="flex items-center justify-center gap-3 py-4 border-y border-brand-red/10">
               {priceData.showDiscount ? (
                 <>
@@ -191,7 +183,6 @@ export default function ArtModal({ selectedGroup, currentView, prices, onClose, 
               )}
             </div>
 
-            {/* 3. "QUÉ INCLUYE" (Ahora usa features por tier, no por body_type) */}
             {features.trim() !== '' && (
               <div className="space-y-2">
                 <button
@@ -218,7 +209,6 @@ export default function ArtModal({ selectedGroup, currentView, prices, onClose, 
             )}
           </div>
 
-          {/* 4. MENSAJE DE CONTACTO */}
           <div className="mt-auto pt-8">
             <div className="text-center p-4 rounded-xl border-2 border-dashed border-brand-red/30 bg-brand-red/5">
               <p className="text-sm font-medium text-text/80 italic">{content.sections.commissions.modal.ctaMessage}</p>
@@ -228,4 +218,8 @@ export default function ArtModal({ selectedGroup, currentView, prices, onClose, 
       </div>
     </div>
   );
+
+  // 4. TELETRANSPORTAMOS EL MODAL DIRECTAMENTE AL <BODY> DE LA PÁGINA
+  // Esto escapa de cualquier limitación de CSS (como el transform del MainLayout)
+  return createPortal(modalContent, document.body);
 }

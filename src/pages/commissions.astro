@@ -1,0 +1,8 @@
+---
+import MainLayout from '../layouts/MainLayout.astro';
+import CommissionGallery from '../components/CommissionConfigurator.tsx';
+---
+
+<MainLayout title="Comisiones" activeSection="commissions">
+  <CommissionGallery client:load />
+</MainLayout>

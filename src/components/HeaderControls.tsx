@@ -5,16 +5,8 @@ interface HeaderControlsProps {
 }
 
 export default function HeaderControls({ currentLang }: HeaderControlsProps) {
-  // Inicializar con el valor de localStorage si existe, sino con la prop
-  const getInitialLang = () => {
-    if (typeof window !== 'undefined') {
-      return (localStorage.getItem('lang') as 'es' | 'en') || currentLang;
-    }
-    return currentLang;
-  };
-
   const [theme, setTheme] = useState<'light' | 'dark'>('light');
-  const [lang, setLang] = useState<'es' | 'en'>(getInitialLang());
+  const [lang, setLang] = useState<'es' | 'en'>(currentLang);
 
   useEffect(() => {
     const savedTheme = (localStorage.getItem('theme') as 'light' | 'dark') || 'light';
@@ -31,20 +23,48 @@ export default function HeaderControls({ currentLang }: HeaderControlsProps) {
 
   const toggleLang = () => {
     const newLang = lang === 'es' ? 'en' : 'es';
-
-    // 1. Actualizar el estado INMEDIATAMENTE (la bandera cambia al instante)
     setLang(newLang);
     localStorage.setItem('lang', newLang);
 
-    // 2. Forzar la recarga de la página para que Astro renderice el nuevo idioma
-    // Usamos replace para que no se guarde en el historial del navegador como una página nueva
-    const url = new URL(window.location.href);
-    url.searchParams.set('lang', newLang);
-    window.location.replace(url.toString());
+    const path = window.location.pathname;
+    let newPath = path;
+
+    if (newLang === 'en') {
+      newPath = path.startsWith('/en') ? path : `/en${path === '/' ? '' : path}`;
+    } else {
+      newPath = path.replace(/^\/en/, '') || '/';
+    }
+
+    window.location.href = newPath;
+  };
+
+  const goHome = () => {
+    // Ir al home respetando el idioma actual
+    const homePath = lang === 'en' ? '/en' : '/';
+    window.location.href = homePath;
   };
 
   return (
-    <div className="fixed top-6 right-6 z-50 flex gap-3">
+    <div className="fixed top-6 right-6 z-[9999] flex gap-3">
+      {/* Botón HOME */}
+      <button
+        type="button"
+        onClick={goHome}
+        className="w-12 h-12 rounded-full border-2 border-brand-red bg-beige text-text hover:bg-brand-red hover:text-beige transition-all duration-200 flex items-center justify-center shadow-md cursor-pointer active:scale-95"
+        aria-label="Ir al inicio"
+        title="Ir al inicio"
+      >
+        <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path
+            strokeLinecap="round"
+            strokeLinejoin="round"
+            strokeWidth="2"
+            d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"
+          />
+        </svg>
+      </button>
+
+      {/* Botón de Idioma */}
       <button
         type="button"
         onClick={toggleLang}
@@ -55,6 +75,7 @@ export default function HeaderControls({ currentLang }: HeaderControlsProps) {
         {lang === 'es' ? '🇪🇸' : '🇺🇸'}
       </button>
 
+      {/* Botón de Tema */}
       <button
         type="button"
         onClick={toggleTheme}

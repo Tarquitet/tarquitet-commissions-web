@@ -1,15 +1,8 @@
 ---
-import Layout from '../layouts/Layout.astro';
+import MainLayout from '../layouts/MainLayout.astro';
 import HeroSimple from '../components/HeroSimple.astro';
-import ContentViewer from '../components/ContentViewer.tsx';
 ---
 
-<Layout title="Tarquitet | Commissions">
-  <!-- 1. Hero (Pantalla completa, sin scroll) -->
+<MainLayout title="Inicio" activeSection="home">
   <HeroSimple />
-  
-  <!-- 2. Contenido Principal (Navegación Izquierda/Derecha) -->
-  <main id="main-content" class="w-screen min-h-screen py-20">
-    <ContentViewer client:load />
-  </main>
-</Layout>
+</MainLayout>

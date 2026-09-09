@@ -9,6 +9,7 @@ export interface ArtPiece {
   body_type: string;
   date: string;
 }
+
 export interface PricingTier {
   tier: string;
   original_price: string;
@@ -16,6 +17,7 @@ export interface PricingTier {
   description: string;
   features: string;
 }
+
 export interface TOSItem {
   type: string;
   order: string;
@@ -23,6 +25,7 @@ export interface TOSItem {
   content: string;
   update_date: string;
 }
+
 export interface YCHPiece {
   title: string;
   filename: string;
@@ -32,6 +35,7 @@ export interface YCHPiece {
   num_chars?: string;
   difficult_level?: string;
 }
+
 export interface GuidelineItem {
   type: 'DO' | 'DONT';
   content: string;
@@ -39,54 +43,81 @@ export interface GuidelineItem {
 
 export const GOOGLE_FORM_URL = 'https://forms.gle/QLrFdUaHsva3t8Dg8';
 
-const BASE_RAW_URL = 'https://raw.githubusercontent.com/Tarquitet/JSON-ServersData/main/Commissions-web';
+// URL Base usando jsDelivr (Evita el error 503 de GitHub Raw)
+const BASE_URL = 'https://cdn.jsdelivr.net/gh/Tarquitet/JSON-ServersData@main/Commissions-web';
 
 // Caché en memoria por tipo de archivo
 const cache: Record<string, any> = {};
-const CACHE_DURATION_MS = 5 * 60 * 1000; // 5 minutos
+const CACHE_DURATION_MS = 15 * 60 * 1000; // 15 minutos
 const cacheTimestamps: Record<string, number> = {};
 
-async function fetchJSONFile(filename: string): Promise<any> {
+// Helper para obtener el idioma actual de forma segura (Cliente vs Servidor)
+const getCurrentLang = (): 'es' | 'en' => {
+  if (typeof window !== 'undefined') {
+    return (localStorage.getItem('lang') as 'es' | 'en') || 'es';
+  }
+  return 'es'; // Fallback por defecto para SSR (Astro)
+};
+
+// ✅ FUNCIÓN ACTUALIZADA: Ahora acepta el parámetro 'isLocalized'
+async function fetchJSONFile(filename: string, isLocalized: boolean = false): Promise<any> {
   const now = Date.now();
-  if (cache[filename] && now - cacheTimestamps[filename] < CACHE_DURATION_MS) {
-    return cache[filename];
+  const lang = getCurrentLang();
+
+  // La clave del caché DEBE incluir el idioma si el archivo es localizado
+  const cacheKey = isLocalized ? `${filename}_${lang}` : filename;
+
+  if (cache[cacheKey] && now - cacheTimestamps[cacheKey] < CACHE_DURATION_MS) {
+    return cache[cacheKey];
   }
 
   try {
-    const res = await fetch(`${BASE_RAW_URL}/${filename}?t=${now}`, { cache: 'no-store' });
+    // Construir la URL correcta según si es estático o localizado
+    const url = isLocalized ? `${BASE_URL}/${lang}/${filename}?t=${now}` : `${BASE_URL}/${filename}?t=${now}`;
+
+    const res = await fetch(url, { cache: 'no-store' });
     if (!res.ok) throw new Error(`Error HTTP: ${res.status}`);
 
     const data = await res.json();
-    cache[filename] = data;
-    cacheTimestamps[filename] = now;
+    cache[cacheKey] = data;
+    cacheTimestamps[cacheKey] = now;
     return data;
   } catch (err) {
-    console.error(`Error obteniendo ${filename} de GitHub Raw:`, err);
-    return cache[filename] || []; // Fallback a caché antigua o vacío
+    console.error(`Error obteniendo ${filename}:`, err);
+    return cache[cacheKey] || []; // Fallback a caché antigua o vacío
   }
 }
 
 // ============================================================================
-// FETCHERS MASTICADOS (Idénticos a los que ya usan tus componentes)
+// FETCHERS MASTICADOS
 // ============================================================================
 
+// ✅ ESTÁTICOS (isLocalized = false) -> Busca en: Commissions-web/portfolio.json
 export async function getSheetArtworks(limit: number = 50, offset: number = 0): Promise<ArtPiece[]> {
-  const data = await fetchJSONFile('portfolio.json');
+  const data = await fetchJSONFile('portfolio.json', false);
   return ((data as ArtPiece[]) || [])
     .sort((a, b) => parseInt(b.date || '0') - parseInt(a.date || '0'))
     .slice(offset, offset + limit);
 }
 
-export async function getSheetPrices(): Promise<PricingTier[]> {
-  return ((await fetchJSONFile('prices.json')) as PricingTier[]) || [];
+// ✅ ESTÁTICOS (isLocalized = false) -> Busca en: Commissions-web/ych.json
+export async function getSheetYCH(): Promise<YCHPiece[]> {
+  const data = await fetchJSONFile('ych.json', false);
+  return ((data as YCHPiece[]) || []).filter((item) => item.title && item.filename);
 }
 
+// ✅ LOCALIZADOS (isLocalized = true) -> Busca en: Commissions-web/es/prices.json o /en/prices.json
+export async function getSheetPrices(): Promise<PricingTier[]> {
+  return ((await fetchJSONFile('prices.json', true)) as PricingTier[]) || [];
+}
+
+// ✅ LOCALIZADOS (isLocalized = true) -> Busca en: Commissions-web/es/tos.json o /en/tos.json
 export async function getSheetTOS(): Promise<{
   startBlock: TOSItem | null;
   finalBlock: TOSItem | null;
   listItems: TOSItem[];
 }> {
-  const data = ((await fetchJSONFile('tos.json')) as TOSItem[]) || [];
+  const data = ((await fetchJSONFile('tos.json', true)) as TOSItem[]) || [];
   return {
     startBlock: data.find((t) => t.type === 'S') || null,
     finalBlock: data.find((t) => t.type === 'F') || null,
@@ -94,13 +125,9 @@ export async function getSheetTOS(): Promise<{
   };
 }
 
-export async function getSheetYCH(): Promise<YCHPiece[]> {
-  const data = ((await fetchJSONFile('ych.json')) as YCHPiece[]) || [];
-  return data.filter((item) => item.title && item.filename);
-}
-
+// ✅ LOCALIZADOS (isLocalized = true) -> Busca en: Commissions-web/es/guidelines.json o /en/guidelines.json
 export async function getSheetGuidelines(): Promise<{ allowed: GuidelineItem[]; restricted: GuidelineItem[] }> {
-  const data = ((await fetchJSONFile('guidelines.json')) as GuidelineItem[]) || [];
+  const data = ((await fetchJSONFile('guidelines.json', true)) as GuidelineItem[]) || [];
   return {
     allowed: data.filter((i) => i.type?.toUpperCase().trim() === 'DO'),
     restricted: data.filter((i) => i.type?.toUpperCase().trim() === 'DONT'),

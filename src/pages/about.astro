@@ -1,0 +1,8 @@
+---
+import MainLayout from '../layouts/MainLayout.astro';
+import AboutArtist from '../components/AboutArtist.tsx';
+---
+
+<MainLayout title="Sobre Mí" activeSection="about">
+  <AboutArtist client:load />
+</MainLayout>

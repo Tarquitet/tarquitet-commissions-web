@@ -9,7 +9,13 @@ export default defineConfig({
   site: 'https://art.tarquitet.com',
   // Mantenemos solo React en integrations
   integrations: [react(), sitemap()],
-
+  i18n: {
+    defaultLocale: 'es',
+    locales: ['es', 'en'],
+    routing: {
+      prefixDefaultLocale: false, // '/about' es español, '/en/about' es inglés
+    },
+  },
   // Agregamos Tailwind a través de la configuración de Vite
   vite: {
     plugins: [tailwindcss()],

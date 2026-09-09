@@ -1,0 +1,8 @@
+---
+import MainLayout from '../layouts/MainLayout.astro';
+import TOSSection from '../components/TOSSection.tsx';
+---
+
+<MainLayout title="Términos" activeSection="tos">
+  <TOSSection client:load />
+</MainLayout>

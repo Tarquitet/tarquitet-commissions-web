@@ -1,0 +1,45 @@
+---
+import '../styles/global.css';
+import { contentES, contentEN } from '../data/content';
+import { sections } from '../data/sections';
+import HeaderControls from '../components/HeaderControls.tsx';
+import NavTitles from '../components/NavTitles.tsx';
+
+// ✅ Astro detecta el idioma automáticamente por la URL (/en/... o /...)
+const lang = Astro.currentLocale as 'es' | 'en';
+const content = lang === 'en' ? contentEN : contentES;
+
+const { title, activeSection } = Astro.props as { title: string; activeSection: string };
+---
+
+<!doctype html>
+<html lang={lang} data-theme="light">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>{title} | Tarquitet</title>
+    <style>
+      @keyframes slideInRight {
+        from { opacity: 0; transform: translateX(40px); }
+        to { opacity: 1; transform: translateX(0); }
+      }
+      .animate-slide {
+        animation: slideInRight 0.4s ease-out forwards;
+      }
+    </style>
+  </head>
+  <body class="bg-[var(--bg-color)] text-[var(--text-color)] transition-colors duration-300">
+    
+    <!-- Le pasamos el idioma detectado por Astro -->
+    <HeaderControls client:load currentLang={lang} />
+
+    {activeSection !== 'home' && (
+      <NavTitles client:load activeSection={activeSection} currentLang={lang} />
+    )}
+
+    <main class={activeSection !== 'home' ? 'animate-slide w-full max-w-7xl mx-auto px-4 pb-20' : 'w-full'}>
+      <slot />
+    </main>
+
+  </body>
+</html>
