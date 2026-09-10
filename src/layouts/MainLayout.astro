@@ -5,20 +5,70 @@ import { sections } from '../data/sections';
 import HeaderControls from '../components/HeaderControls.tsx';
 import NavTitles from '../components/NavTitles.tsx';
 
-// Detectar idioma de la URL
+// 1. LÓGICA DE IDIOMA (La que arreglamos)
 const isEnglish = Astro.url.pathname.startsWith('/en');
 const lang = isEnglish ? 'en' : 'es';
 const content = lang === 'en' ? contentEN : contentES;
 
-const { title, activeSection } = Astro.props as { title: string; activeSection: string };
+// 2. PROPS FUSIONADAS (SEO + Navegación)
+const { 
+  title, 
+  activeSection,
+  description = lang === 'en' 
+    ? "Tarquitet - Professional Illustrator, Programmer & Designer. Digital Art Commissions and Gallery." 
+    : "Tarquitet - Ilustrador Digital, Programador y Diseñador. Comisiones de Arte Digital y Galería.",
+  image = "/favicon/social-preview.jpg" 
+} = Astro.props as { 
+  title: string; 
+  activeSection: string; 
+  description?: string; 
+  image?: string; 
+};
+
+// 3. URLS PARA SEO (Tu lógica original, intacta)
+const siteURL = Astro.site ? Astro.site.href : "https://art.tarquitet.com";
+const canonicalURL = new URL(Astro.url.pathname, siteURL);
+const socialImageURL = new URL(image, siteURL);
 ---
 
 <!doctype html>
-<html lang={lang} data-theme="light">
+<!-- ✅ AQUÍ USAMOS LA VARIABLE 'lang' DINÁMICA, NO 'en' HARDCODEADO -->
+<html lang={lang} class="bg-brand-black text-brand-light selection:bg-brand-red selection:text-white">
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="icon" type="image/svg+xml" href="/favicon/favicon.svg" />
+    <meta name="generator" content={Astro.generator} />
+
+    <!-- SEO Básico -->
     <title>{title} | Tarquitet</title>
+    <meta name="title" content={`${title} | Tarquitet`} />
+    <meta name="description" content={description} />
+    <link rel="canonical" href={canonicalURL} />
+    <meta name="keywords" content="Multimedia Engineer, Digital Artist, Character Design, Programmer, Tarquitet, Colombia, Web Development, Comisiones, Arte Digital" />
+    <meta name="author" content="David Josué Pinto Gómez (Tarquitet)" />
+
+    <!-- Open Graph / Facebook -->
+    <meta property="og:type" content="website" />
+    <meta property="og:url" content={canonicalURL} />
+    <meta property="og:title" content={title} />
+    <meta property="og:description" content={description} />
+    <meta property="og:image" content={socialImageURL} />
+    <meta property="og:locale" content={lang === 'es' ? 'es_CO' : 'en_US'} />
+
+    <!-- Twitter -->
+    <meta property="twitter:card" content="summary_large_image" />
+    <meta property="twitter:url" content={canonicalURL} />
+    <meta property="twitter:title" content={title} />
+    <meta property="twitter:description" content={description} />
+    <meta property="twitter:image" content={socialImageURL} />
+
+    <!-- Fuentes -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;700;900&family=JetBrains+Mono:wght@400;700&display=swap" rel="stylesheet">
+
+    <!-- Estilos de animación de página -->
     <style>
       @keyframes slideInRight {
         from { opacity: 0; transform: translateX(40px); }
@@ -29,18 +79,44 @@ const { title, activeSection } = Astro.props as { title: string; activeSection: 
       }
     </style>
   </head>
-  <body class="bg-[var(--bg-color)] text-[var(--text-color)] transition-colors duration-300">
+  
+  <!-- ✅ CLASES DE TAILWIND FUSIONADAS -->
+  <body class="min-h-screen flex flex-col font-sans antialiased overflow-x-hidden bg-[var(--bg-color)] text-[var(--text-color)] transition-colors duration-300">
     
-    <!-- Sin props, el componente detecta el idioma solo -->
+    <!-- Controles y Navegación -->
     <HeaderControls client:load />
 
     {activeSection !== 'home' && (
       <NavTitles client:load activeSection={activeSection} currentLang={lang} />
     )}
 
-    <main class={activeSection !== 'home' ? 'animate-slide w-full max-w-7xl mx-auto px-4 pb-20' : 'w-full'}>
+    <!-- Contenido Principal -->
+    <main class={activeSection !== 'home' ? 'animate-slide grow w-full max-w-7xl mx-auto px-4 pb-20' : 'grow w-full'}>
       <slot />
     </main>
+    
+    <!-- Script de Animación al hacer Scroll (Tu lógica original intacta) -->
+    <script>
+      document.addEventListener('DOMContentLoaded', () => {
+        const observerOptions = {
+          root: null,
+          rootMargin: '0px',
+          threshold: 0.15
+        };
 
+        const observer = new IntersectionObserver((entries, observer) => {
+          entries.forEach(entry => {
+            if (entry.isIntersecting) {
+              entry.target.classList.add('is-visible');
+              observer.unobserve(entry.target);
+            }
+          });
+        }, observerOptions);
+
+        document.querySelectorAll('.reveal-on-scroll').forEach((el) => {
+          observer.observe(el);
+        });
+      });
+    </script>
   </body>
 </html>
